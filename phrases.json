@@ -1,0 +1,227 @@
+[
+  {
+    "id": 1,
+    "es": "Buenos días, ¿cómo está usted?",
+    "en": "Good morning, how do you do?",
+    "ipa_rp": "/ɡʊd ˈmɔːnɪŋ haʊ duː juː duː/",
+    "target_phonemes": ["ɔː", "ʊ", "juː"],
+    "difficulty": "easy",
+    "notes": "RP greeting: 'how do you do' is more formal than 'how are you'. The 'o' in 'morning' is /ɔː/ not /oʊ/."
+  },
+  {
+    "id": 2,
+    "es": "El tiempo está bastante horrible hoy.",
+    "en": "The weather is rather dreadful today.",
+    "ipa_rp": "/ðə ˈweðə ɪz ˈrɑːðə ˈdrɛdf(ə)l təˈdeɪ/",
+    "target_phonemes": ["ð", "ɑː", "non-rhotic-r", "ə"],
+    "difficulty": "medium",
+    "notes": "Key RP features: non-rhotic (silent R in 'weather', 'rather'), /ð/ not /d/ for 'the', /ɑː/ in 'rather'."
+  },
+  {
+    "id": 3,
+    "es": "¿Dónde está la estación de tren?",
+    "en": "Where is the railway station?",
+    "ipa_rp": "/weə ɪz ðə ˈreɪlweɪ ˈsteɪʃ(ə)n/",
+    "target_phonemes": ["weə", "ð", "eɪ", "ʃ", "ə"],
+    "difficulty": "easy",
+    "notes": "Non-rhotic 'where' = /weə/ not /wɛr/. Schwa in '-tion' ending."
+  },
+  {
+    "id": 4,
+    "es": "Me gustaría un vaso de agua, por favor.",
+    "en": "I'd like a glass of water, please.",
+    "ipa_rp": "/aɪd laɪk ə ɡlɑːs əv ˈwɔːtə pliːz/",
+    "target_phonemes": ["ɑː", "ɔː", "non-rhotic-r", "ə"],
+    "difficulty": "easy",
+    "notes": "Bath vowel: 'glass' = /ɡlɑːs/ (RP bath broadening, not /glæs/). Non-rhotic 'water'."
+  },
+  {
+    "id": 5,
+    "es": "Pasa la mantequilla, por favor.",
+    "en": "Could you pass the butter, please?",
+    "ipa_rp": "/kʊd juː pɑːs ðə ˈbʌtə pliːz/",
+    "target_phonemes": ["ɑː", "ʌ", "ð", "non-rhotic-r"],
+    "difficulty": "easy",
+    "notes": "/ʌ/ in 'butter' — Spanish speakers often say /a/. Bath broadening in 'pass'."
+  },
+  {
+    "id": 6,
+    "es": "Voy al teatro esta tarde.",
+    "en": "I'm going to the theatre this evening.",
+    "ipa_rp": "/aɪm ˈɡəʊɪŋ tə ðə ˈθɪətə ðɪs ˈiːvnɪŋ/",
+    "target_phonemes": ["θ", "ɪ", "iː", "ð", "non-rhotic-r", "əʊ"],
+    "difficulty": "medium",
+    "notes": "/θ/ in 'theatre' and 'this'. RP diphthong /əʊ/ (not /oʊ/) in 'going'. Non-rhotic 'theatre'."
+  },
+  {
+    "id": 7,
+    "es": "El baño es absolutamente maravilloso.",
+    "en": "The bath is absolutely marvellous.",
+    "ipa_rp": "/ðə bɑːθ ɪz ˈæbsəluːtli ˈmɑːv(ə)ləs/",
+    "target_phonemes": ["ɑː", "θ", "ð", "non-rhotic-r"],
+    "difficulty": "medium",
+    "notes": "Bath broadening: 'bath' = /bɑːθ/ not /bæθ/. /θ/ at end of 'bath' — don't say /bɑːf/."
+  },
+  {
+    "id": 8,
+    "es": "Me temo que el tren llegó tarde.",
+    "en": "I'm afraid the train was rather late.",
+    "ipa_rp": "/aɪm əˈfreɪd ðə treɪn wɒz ˈrɑːðə leɪt/",
+    "target_phonemes": ["eɪ", "ɒ", "ð", "ɑː", "non-rhotic-r"],
+    "difficulty": "medium",
+    "notes": "RP /ɒ/ in 'was' — short rounded vowel. Non-rhotic 'rather'. 'I'm afraid' is a very RP softener."
+  },
+  {
+    "id": 9,
+    "es": "Ella habló con claridad durante la reunión.",
+    "en": "She spoke clearly throughout the meeting.",
+    "ipa_rp": "/ʃiː spəʊk ˈklɪəli θruːˈaʊt ðə ˈmiːtɪŋ/",
+    "target_phonemes": ["θ", "ɪə", "iː", "əʊ", "ð"],
+    "difficulty": "medium",
+    "notes": "/θ/ in 'throughout'. RP diphthong /əʊ/ in 'spoke'. /ɪə/ in 'clearly'."
+  },
+  {
+    "id": 10,
+    "es": "¿Podría llamarme un taxi, por favor?",
+    "en": "Could you ring for a taxi, please?",
+    "ipa_rp": "/kʊd juː rɪŋ fər ə ˈtæksi pliːz/",
+    "target_phonemes": ["ɪ", "æ", "ə"],
+    "difficulty": "easy",
+    "notes": "/ɪ/ in 'ring' — short, not the Spanish /i/. 'ring' is RP word for calling."
+  },
+  {
+    "id": 11,
+    "es": "Creo que va a llover esta tarde.",
+    "en": "I think it's going to rain this afternoon.",
+    "ipa_rp": "/aɪ θɪŋk ɪts ˈɡəʊɪŋ tə reɪn ðɪs ɑːftəˈnuːn/",
+    "target_phonemes": ["θ", "ɪ", "əʊ", "ɑː", "non-rhotic-r"],
+    "difficulty": "medium",
+    "notes": "/θ/ in 'think' — tongue between teeth. Bath broadening in 'afternoon' = /ɑːftə/."
+  },
+  {
+    "id": 12,
+    "es": "Prefiero el té con leche fría.",
+    "en": "I prefer my tea with cold milk.",
+    "ipa_rp": "/aɪ prɪˈfɜː maɪ tiː wɪð kəʊld mɪlk/",
+    "target_phonemes": ["ɜː", "iː", "ð", "non-rhotic-r", "ɪ"],
+    "difficulty": "medium",
+    "notes": "Non-rhotic 'prefer' = /prɪˈfɜː/. /ɜː/ is a tricky RP vowel. /ð/ in 'with'."
+  },
+  {
+    "id": 13,
+    "es": "Qué sorpresa tan agradable verte aquí.",
+    "en": "What a pleasant surprise to see you here.",
+    "ipa_rp": "/wɒt ə ˈplɛz(ə)nt səˈpraɪz tə siː juː hɪə/",
+    "target_phonemes": ["ɒ", "ɛ", "ə", "non-rhotic-r", "ɪə"],
+    "difficulty": "medium",
+    "notes": "/ɒ/ in 'what'. RP diphthong /ɪə/ in 'here'. Non-rhotic 'surprise'."
+  },
+  {
+    "id": 14,
+    "es": "¿Serías tan amable de abrir la puerta?",
+    "en": "Would you be so kind as to open the door?",
+    "ipa_rp": "/wʊd juː biː səʊ kaɪnd æz tə ˈəʊp(ə)n ðə dɔː/",
+    "target_phonemes": ["əʊ", "ɔː", "ð", "ə"],
+    "difficulty": "medium",
+    "notes": "Non-rhotic 'door' = /dɔː/. RP diphthong /əʊ/ in 'so' and 'open'."
+  },
+  {
+    "id": 15,
+    "es": "El parque se ve muy hermoso en primavera.",
+    "en": "The park looks rather splendid in spring.",
+    "ipa_rp": "/ðə pɑːk lʊks ˈrɑːðə ˈsplɛndɪd ɪn sprɪŋ/",
+    "target_phonemes": ["ɑː", "ð", "non-rhotic-r", "ɪ"],
+    "difficulty": "medium",
+    "notes": "Bath broadening: 'park' = /pɑːk/. Non-rhotic: silent R. /ɪ/ in 'splendid', 'in', 'spring'."
+  },
+  {
+    "id": 16,
+    "es": "Estoy pensando en irme al campo este fin de semana.",
+    "en": "I'm thinking of going to the countryside this weekend.",
+    "ipa_rp": "/aɪm ˈθɪŋkɪŋ əv ˈɡəʊɪŋ tə ðə ˈkʌntrisaɪd ðɪs ˈwiːkɛnd/",
+    "target_phonemes": ["θ", "ɪ", "əʊ", "ʌ", "ð"],
+    "difficulty": "hard",
+    "notes": "/θ/ in 'thinking'. /ʌ/ in 'countryside' — not /a/. /əʊ/ in 'going'. Lots of /ð/."
+  },
+  {
+    "id": 17,
+    "es": "Sin lugar a dudas, fue el mejor concierto de mi vida.",
+    "en": "Without doubt, it was the finest concert I've ever heard.",
+    "ipa_rp": "/wɪðˈaʊt daʊt ɪt wɒz ðə ˈfaɪnɪst ˈkɒnsət aɪv ˈɛvə hɜːd/",
+    "target_phonemes": ["ð", "ɒ", "non-rhotic-r", "ɜː", "ɪ"],
+    "difficulty": "hard",
+    "notes": "/ð/ in 'without', 'the'. Non-rhotic: 'concert'=/ˈkɒnsət/, 'heard'=/hɜːd/, 'ever'=/ˈɛvə/."
+  },
+  {
+    "id": 18,
+    "es": "Me parece que tiene usted razón.",
+    "en": "I rather think you're right, you know.",
+    "ipa_rp": "/aɪ ˈrɑːðə θɪŋk jɔː raɪt juː nəʊ/",
+    "target_phonemes": ["ɑː", "θ", "non-rhotic-r", "ɔː", "əʊ"],
+    "difficulty": "medium",
+    "notes": "Very RP phrasing. Non-rhotic 'rather', 'you're'. /əʊ/ in 'know'. 'you know' = /juː nəʊ/."
+  },
+  {
+    "id": 19,
+    "es": "Las flores en el jardín son absolutamente preciosas.",
+    "en": "The flowers in the garden are absolutely gorgeous.",
+    "ipa_rp": "/ðə ˈflaʊəz ɪn ðə ˈɡɑːd(ə)n ɑː ˈæbsəluːtli ˈɡɔːdʒəs/",
+    "target_phonemes": ["ð", "ɑː", "non-rhotic-r", "ɔː", "ə"],
+    "difficulty": "hard",
+    "notes": "Non-rhotic throughout: 'flowers'=/ˈflaʊəz/, 'garden'=/ˈɡɑːd(ə)n/, 'gorgeous'=/ˈɡɔːdʒəs/."
+  },
+  {
+    "id": 20,
+    "es": "¿Qué tal si tomamos una taza de té?",
+    "en": "Shall we have a cup of tea?",
+    "ipa_rp": "/ʃæl wiː hæv ə kʌp əv tiː/",
+    "target_phonemes": ["æ", "ʌ", "iː", "ə"],
+    "difficulty": "easy",
+    "notes": "/æ/ in 'shall', 'have'. /ʌ/ in 'cup' — not /a/. Very RP social phrase."
+  },
+  {
+    "id": 21,
+    "es": "Discúlpame, no te vi ahí.",
+    "en": "I beg your pardon, I didn't see you there.",
+    "ipa_rp": "/aɪ bɛɡ jɔː ˈpɑːd(ə)n aɪ ˈdɪd(ə)nt siː juː ðeə/",
+    "target_phonemes": ["ɔː", "ɑː", "non-rhotic-r", "ɪ", "ðeə"],
+    "difficulty": "medium",
+    "notes": "Classic RP apology. Non-rhotic 'pardon'=/ˈpɑːd(ə)n/, 'your'=/jɔː/. /ðeə/ in 'there'."
+  },
+  {
+    "id": 22,
+    "es": "¿Podría hablar más despacio, por favor?",
+    "en": "Would you mind speaking a little more slowly?",
+    "ipa_rp": "/wʊd juː maɪnd ˈspiːkɪŋ ə ˈlɪt(ə)l mɔː ˈsləʊli/",
+    "target_phonemes": ["iː", "ɪ", "ɔː", "non-rhotic-r", "əʊ"],
+    "difficulty": "medium",
+    "notes": "/ɔː/ in 'more' (non-rhotic). RP diphthong /əʊ/ in 'slowly'. /ɪ/ in 'little', 'speaking'."
+  },
+  {
+    "id": 23,
+    "es": "Sería un placer acompañarle a cenar.",
+    "en": "I should be delighted to join you for dinner.",
+    "ipa_rp": "/aɪ ʃʊd biː dɪˈlaɪtɪd tə dʒɔɪn juː fə ˈdɪnə/",
+    "target_phonemes": ["ɪ", "ɔɪ", "non-rhotic-r", "ə"],
+    "difficulty": "hard",
+    "notes": "Very formal RP phrasing. Non-rhotic 'dinner'=/ˈdɪnə/. /ɔɪ/ diphthong in 'join'."
+  },
+  {
+    "id": 24,
+    "es": "El norte de Inglaterra es verdaderamente hermoso.",
+    "en": "The north of England is truly breathtaking.",
+    "ipa_rp": "/ðə nɔːθ əv ˈɪŋɡlənd ɪz ˈtruːli ˈbrɛθteɪkɪŋ/",
+    "target_phonemes": ["θ", "ɔː", "non-rhotic-r", "ɪ", "ð"],
+    "difficulty": "hard",
+    "notes": "/θ/ in 'north', 'breathtaking'. Non-rhotic 'north'=/nɔːθ/. Cluster /brɛθ/ is tricky."
+  },
+  {
+    "id": 25,
+    "es": "Fue un absoluto placer conocerle. Espero que volvamos a vernos pronto.",
+    "en": "It's been an absolute pleasure. I do hope we shall meet again.",
+    "ipa_rp": "/ɪts bɪn ən ˈæbsəluːt ˈplɛʒə aɪ duː həʊp wiː ʃæl miːt əˈɡɛn/",
+    "target_phonemes": ["ɪ", "æ", "ɛ", "ɒ", "əʊ", "non-rhotic-r", "ð"],
+    "difficulty": "hard",
+    "notes": "Non-rhotic 'pleasure'=/ˈplɛʒə/. /æ/ in 'absolute'. RP intensifier 'I do hope'. Classic farewell."
+  }
+]

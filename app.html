@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Posh English Trainer</title>
+<style>
+  :root {
+    --paper:  #F5F4EE;
+    --ink:    #1F1D1B;
+    --clay:   #CC785C;
+    --clay-d: #A1543D;
+    --sand:   #EBE5D7;
+    --border: rgba(20,20,19,0.12);
+    --ok:     #4A7C59;
+    --warn:   #B8860B;
+    --err:    #CC785C;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Inter, -apple-system, sans-serif;
+    font-size: 14px;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.02em; }
+  header .sub { font-size: 12px; opacity: 0.6; margin-left: auto; }
+
+  /* ── Progress bar ── */
+  #progress-wrap {
+    background: var(--sand);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  #progress-bar-outer {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  #progress-bar-inner {
+    height: 100%;
+    background: var(--clay);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  #progress-label { font-size: 12px; color: var(--ink); opacity: 0.7; white-space: nowrap; }
+  #score-label { font-size: 12px; color: var(--clay-d); font-weight: 600; white-space: nowrap; }
+
+  /* ── Main container ── */
+  main {
+    max-width: 720px;
+    margin: 28px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .card-header {
+    background: var(--sand);
+    padding: 10px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-header .step-badge {
+    background: var(--clay);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .card-body { padding: 18px; }
+
+  /* ── Phrase display ── */
+  .phrase-text {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .ipa-text {
+    font-size: 15px;
+    color: var(--clay-d);
+    font-family: 'Courier New', monospace;
+    background: var(--sand);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+  .notes-text {
+    font-size: 12px;
+    color: var(--ink);
+    opacity: 0.55;
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  /* ── Controls row ── */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* ── Buttons ── */
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 16px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-primary {
+    background: var(--clay);
+    color: white;
+  }
+  .btn-primary:hover:not(:disabled) { background: var(--clay-d); }
+
+  .btn-secondary {
+    background: var(--sand);
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover:not(:disabled) { background: #ddd8cc; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--clay);
+    border: 1.5px solid var(--clay);
+  }
+  .btn-ghost:hover:not(:disabled) { background: rgba(204,120,92,0.08); }
+
+  .btn-record { background: #c0392b; color: white; }
+  .btn-record:hover:not(:disabled) { background: #922b21; }
+  .btn-record.recording { background: #922b21; animation: pulse 1s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
+  }
+
+  /* ── Transcription result ── */
+  .transcription-box {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--ink);
+    min-height: 36px;
+    display: none;
+  }
+  .transcription-box.visible { display: block; }
+  .transcription-box .label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 4px;
+  }
+
+  /* ── Word diagnosis ── */
+  #diagnosis-section { display: none; }
+  #diagnosis-section.visible { display: block; }
+
+  .word-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .chip {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 2px solid transparent;
+  }
+  .chip.ok    { background: rgba(74,124,89,0.12);  color: var(--ok);  border-color: rgba(74,124,89,0.3); }
+  .chip.warn  { background: rgba(184,134,11,0.12); color: var(--warn); border-color: rgba(184,134,11,0.3); }
+  .chip.error { background: rgba(204,120,92,0.15); color: var(--clay-d); border-color: var(--clay); }
+
+  .tips-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .tip-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--sand);
+    border-radius: 8px;
+    border-left: 3px solid var(--clay);
+  }
+  .tip-item .tip-word {
+    font-weight: 700;
+    color: var(--clay-d);
+    min-width: 60px;
+    font-size: 13px;
+  }
+  .tip-item .tip-content { font-size: 13px; line-height: 1.5; }
+  .tip-item .phoneme-error {
+    font-size: 11px;
+    color: var(--ink);
+    opacity: 0.55;
+    font-family: monospace;
+    margin-top: 2px;
+  }
+
+  .score-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    background: var(--sand);
+    border-radius: 8px;
+    margin-bottom: 14px;
+  }
+  .score-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--clay);
+    line-height: 1;
+  }
+  .score-denom { font-size: 14px; color: var(--ink); opacity: 0.5; }
+  .score-right { flex: 1; }
+  .focus-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.5;
+    margin-bottom: 3px;
+  }
+  .focus-text { font-size: 13px; line-height: 1.4; }
+  .encouragement-text {
+    font-size: 13px;
+    color: var(--ok);
+    font-style: italic;
+    margin-top: 6px;
+  }
+
+  /* ── Nav buttons ── */
+  .nav-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  /* ── Status indicator ── */
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #aaa;
+    flex-shrink: 0;
+  }
+  .status-dot.done { background: var(--ok); }
+  .status-dot.active { background: var(--clay); animation: pulse-dot 1s infinite; }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+  }
+
+  /* ── Loading spinner ── */
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  .spinner.dark {
+    border-color: rgba(31,29,27,0.2);
+    border-top-color: var(--ink);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Difficulty badge ── */
+  .diff-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .diff-easy   { background: rgba(74,124,89,0.15); color: var(--ok); }
+  .diff-medium { background: rgba(184,134,11,0.15); color: var(--warn); }
+  .diff-hard   { background: rgba(204,120,92,0.15); color: var(--clay-d); }
+
+  /* ── Attempt counter ── */
+  #attempt-label {
+    font-size: 12px;
+    color: var(--ink);
+    opacity: 0.55;
+  }
+
+  /* ── No mic error ── */
+  #mic-error {
+    display: none;
+    background: rgba(204,120,92,0.1);
+    border: 1px solid var(--clay);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--clay-d);
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>🎩</div>
+  <h1>Posh English Trainer</h1>
+  <div class="sub">RP Accent · Latin American Spanish → British RP</div>
+</header>
+
+<div id="progress-wrap">
+  <div id="progress-bar-outer"><div id="progress-bar-inner"></div></div>
+  <div id="progress-label">Frase 1 de 25</div>
+  <div id="score-label">—</div>
+</div>
+
+<main>
+
+  <div id="mic-error">
+    ⚠️ No se pudo acceder al micrófono. Verifica los permisos del navegador e intenta de nuevo.
+  </div>
+
+  <!-- Step 1: Spanish -->
+  <div class="card" id="card-step1">
+    <div class="card-header">
+      <div class="step-badge">1</div>
+      Lee en español — warming up
+      <div class="status-dot" id="dot1"></div>
+    </div>
+    <div class="card-body">
+      <div class="phrase-text" id="phrase-es"></div>
+      <div class="notes-text">Léelo en voz alta para familiarizarte con el significado.</div>
+      <div class="controls">
+        <button class="btn-record" id="btn-rec1" onclick="startStep(1)">● Grabar</button>
+        <button class="btn-ghost" id="btn-skip1" onclick="skipStep(1)">Omitir</button>
+      </div>
+      <div class="transcription-box" id="trans1">
+        <div class="label">Whisper escuchó</div>
+        <div id="trans1-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: English -->
+  <div class="card" id="card-step2">
+    <div class="card-header">
+      <div class="step-badge">2</div>
+      Lee en inglés — warm up con las palabras
+      <div class="status-dot" id="dot2"></div>
+    </div>
+    <div class="card-body">
+      <div class="phrase-text" id="phrase-en"></div>
+      <div class="notes-text">Léelo sin preocuparte aún por el acento. Solo familiarízate con las palabras.</div>
+      <div class="controls">
+        <button class="btn-record" id="btn-rec2" onclick="startStep(2)" disabled>● Grabar</button>
+        <button class="btn-ghost" id="btn-skip2" onclick="skipStep(2)" disabled>Omitir</button>
+      </div>
+      <div class="transcription-box" id="trans2">
+        <div class="label">Whisper escuchó</div>
+        <div id="trans2-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Posh attempt -->
+  <div class="card" id="card-step3">
+    <div class="card-header">
+      <div class="step-badge">3</div>
+      Intenta Posh English — RP accent
+      <div id="diff-badge" class="diff-badge diff-easy" style="margin-left:auto"></div>
+    </div>
+    <div class="card-body">
+      <div class="phrase-text" id="phrase-en2"></div>
+      <div class="ipa-text" id="phrase-ipa"></div>
+      <div class="notes-text" id="phrase-notes"></div>
+      <div class="controls">
+        <button class="btn-secondary" id="btn-tts" onclick="playTTS()" disabled>
+          ♪ Escuchar RP
+        </button>
+        <button class="btn-record" id="btn-rec3" onclick="startStep(3)" disabled>● Grabar intento</button>
+        <span id="attempt-label"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diagnosis -->
+  <div class="card" id="diagnosis-section">
+    <div class="card-header">
+      <div class="step-badge" style="background:var(--ink)">✦</div>
+      Diagnóstico de pronunciación
+    </div>
+    <div class="card-body">
+      <div class="score-display">
+        <div>
+          <div class="score-number" id="score-num">—</div>
+          <div class="score-denom">/ 10</div>
+        </div>
+        <div class="score-right">
+          <div class="focus-label">Enfócate en</div>
+          <div class="focus-text" id="focus-text">—</div>
+          <div class="encouragement-text" id="encouragement-text"></div>
+        </div>
+      </div>
+
+      <div class="word-chips" id="word-chips"></div>
+      <div class="tips-list" id="tips-list"></div>
+
+      <div class="nav-row">
+        <button class="btn-ghost" id="btn-retry" onclick="retryStep3()">↺ Reintentar</button>
+        <button class="btn-primary" id="btn-next" onclick="nextPhrase()">Siguiente frase →</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+
+<script>
+const API = '';
+
+let phrases = [];
+let currentIdx = 0;
+let attempt = 0;
+let sessionScores = [];
+let stepsDone = [false, false];
+
+
+// ── Init ──────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const r = await fetch(`${API}/phrases`);
+    phrases = await r.json();
+    phrases.sort((a, b) => a.id - b.id);
+    loadPhrase(0);
+  } catch(e) {
+    alert('No se puede conectar al servidor. Verifica que el backend está corriendo:\n\npython server.py');
+  }
+}
+
+function loadPhrase(idx) {
+  currentIdx = idx;
+  attempt = 0;
+  stepsDone = [false, false];
+
+  const p = phrases[idx];
+
+  // Progress
+  const pct = Math.round((idx / phrases.length) * 100);
+  document.getElementById('progress-bar-inner').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Frase ${idx + 1} de ${phrases.length}`;
+  updateScoreLabel();
+
+  // Phrases
+  document.getElementById('phrase-es').textContent = '❝ ' + p.es + ' ❞';
+  document.getElementById('phrase-en').textContent = '❝ ' + p.en + ' ❞';
+  document.getElementById('phrase-en2').textContent = '❝ ' + p.en + ' ❞';
+  document.getElementById('phrase-ipa').textContent = p.ipa_rp;
+  document.getElementById('phrase-notes').textContent = p.notes;
+
+  const diff = p.difficulty;
+  const badge = document.getElementById('diff-badge');
+  badge.textContent = diff;
+  badge.className = `diff-badge diff-${diff}`;
+
+  // Reset UI
+  resetStepUI(1);
+  resetStepUI(2);
+  resetStep3UI();
+  hideDiagnosis();
+
+  document.getElementById('btn-rec2').disabled = true;
+  document.getElementById('btn-skip2').disabled = true;
+  document.getElementById('btn-rec3').disabled = true;
+  document.getElementById('btn-tts').disabled = true;
+  document.getElementById('attempt-label').textContent = '';
+}
+
+function updateScoreLabel() {
+  if (sessionScores.length === 0) {
+    document.getElementById('score-label').textContent = '—';
+  } else {
+    const avg = (sessionScores.reduce((a,b)=>a+b,0)/sessionScores.length).toFixed(1);
+    document.getElementById('score-label').textContent = `Score sesión: ${avg}/10`;
+  }
+}
+
+function resetStepUI(step) {
+  const trans = document.getElementById(`trans${step}`);
+  trans.classList.remove('visible');
+  document.getElementById(`trans${step}-text`).textContent = '';
+  const dot = document.getElementById(`dot${step}`);
+  dot.className = 'status-dot';
+  const btn = document.getElementById(`btn-rec${step}`);
+  btn.classList.remove('recording');
+  btn.innerHTML = '● Grabar';
+  btn.disabled = (step === 2);
+}
+
+function resetStep3UI() {
+  document.getElementById('btn-rec3').classList.remove('recording');
+  document.getElementById('btn-rec3').innerHTML = '● Grabar intento';
+}
+
+function hideDiagnosis() {
+  document.getElementById('diagnosis-section').classList.remove('visible');
+}
+
+// ── Step progression ──────────────────────────────────────────────────────
+function skipStep(step) {
+  markStepDone(step);
+}
+
+function markStepDone(step) {
+  stepsDone[step - 1] = true;
+  const dot = document.getElementById(`dot${step}`);
+  dot.className = 'status-dot done';
+
+  if (step === 1) {
+    document.getElementById('btn-rec2').disabled = false;
+    document.getElementById('btn-skip2').disabled = false;
+  } else if (step === 2) {
+    document.getElementById('btn-rec3').disabled = false;
+    document.getElementById('btn-tts').disabled = false;
+  }
+}
+
+// ── WAV encoder ───────────────────────────────────────────────────────────
+async function blobToWav(blob) {
+  const arrayBuffer = await blob.arrayBuffer();
+  const audioCtx = new AudioContext();
+  const decoded = await audioCtx.decodeAudioData(arrayBuffer);
+  await audioCtx.close();
+
+  // Resample to 16kHz mono (Azure speech requirement)
+  const targetRate = 16000;
+  const offCtx = new OfflineAudioContext(1, Math.ceil(decoded.duration * targetRate), targetRate);
+  const src = offCtx.createBufferSource();
+  src.buffer = decoded;
+  src.connect(offCtx.destination);
+  src.start();
+  const resampled = await offCtx.startRendering();
+
+  const samples = resampled.getChannelData(0);
+  const pcm = new Int16Array(samples.length);
+  for (let i = 0; i < samples.length; i++)
+    pcm[i] = Math.max(-32768, Math.min(32767, samples[i] * 32768));
+
+  const wavBuf = new ArrayBuffer(44 + pcm.buffer.byteLength);
+  const v = new DataView(wavBuf);
+  const str = (off, s) => [...s].forEach((c, i) => v.setUint8(off + i, c.charCodeAt(0)));
+  str(0, 'RIFF'); v.setUint32(4, 36 + pcm.buffer.byteLength, true);
+  str(8, 'WAVE'); str(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, targetRate, true); v.setUint32(28, targetRate * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  str(36, 'data'); v.setUint32(40, pcm.buffer.byteLength, true);
+  new Int16Array(wavBuf, 44).set(pcm);
+  return new Blob([wavBuf], { type: 'audio/wav' });
+}
+
+// ── Recording (steps 1 & 2 use Web Speech for warm-up, step 3 uses real audio) ──
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let activeRecognition = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let micStream = null;
+
+function startStep(step) {
+  if (step < 3) {
+    startWarmup(step);
+  } else {
+    startRealRecording();
+  }
+}
+
+// Steps 1 & 2: Web Speech API (warm-up only, no analysis needed)
+function startWarmup(step) {
+  const btn = document.getElementById(`btn-rec${step}`);
+  if (activeRecognition) {
+    activeRecognition.stop(); activeRecognition = null;
+    btn.classList.remove('recording');
+    btn.innerHTML = '● Grabar';
+    return;
+  }
+  if (!SpeechRecognition) { skipStep(step); return; }
+  document.getElementById('mic-error').style.display = 'none';
+  const rec = new SpeechRecognition();
+  rec.lang = step === 1 ? 'es-MX' : 'en-GB';
+  rec.interimResults = false; rec.maxAlternatives = 1;
+  activeRecognition = rec;
+  btn.classList.add('recording'); btn.innerHTML = '■ Detener';
+  document.getElementById(`dot${step}`).className = 'status-dot active';
+  rec.onresult = (e) => {
+    activeRecognition = null;
+    btn.classList.remove('recording');
+    const text = e.results[0][0].transcript;
+    document.getElementById(`trans${step}-text`).textContent = text;
+    document.getElementById(`trans${step}`).classList.add('visible');
+    btn.innerHTML = '● Re-grabar'; btn.disabled = false;
+    markStepDone(step);
+  };
+  rec.onerror = () => {
+    activeRecognition = null; btn.classList.remove('recording');
+    btn.innerHTML = '● Grabar'; btn.disabled = false;
+  };
+  rec.onend = () => {
+    if (activeRecognition === rec) activeRecognition = null;
+    if (btn.innerHTML === '■ Detener') btn.innerHTML = '● Grabar';
+  };
+  rec.start();
+}
+
+// Step 3: MediaRecorder → WAV → Azure real assessment
+async function startRealRecording() {
+  const btn = document.getElementById('btn-rec3');
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop(); return;
+  }
+  document.getElementById('mic-error').style.display = 'none';
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch(e) {
+    document.getElementById('mic-error').style.display = 'block'; return;
+  }
+  audioChunks = [];
+  const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+    ? 'audio/webm;codecs=opus' : 'audio/webm';
+  mediaRecorder = new MediaRecorder(micStream, { mimeType });
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+  mediaRecorder.onstop = handleAssessment;
+  mediaRecorder.start(100);
+  btn.classList.add('recording'); btn.innerHTML = '■ Detener (enviar)';
+}
+
+async function handleAssessment() {
+  micStream.getTracks().forEach(t => t.stop());
+  const btn = document.getElementById('btn-rec3');
+  btn.classList.remove('recording');
+  btn.innerHTML = '<span class="spinner"></span> Analizando con Azure...';
+  btn.disabled = true;
+
+  const rawBlob = new Blob(audioChunks, { type: 'audio/webm' });
+  let wavBlob;
+  try { wavBlob = await blobToWav(rawBlob); }
+  catch(e) { wavBlob = rawBlob; } // fallback si falla conversión
+
+  const p = phrases[currentIdx];
+  attempt++;
+  document.getElementById('attempt-label').textContent = `Intento #${attempt}`;
+
+  const fd = new FormData();
+  fd.append('audio', wavBlob, 'recording.wav');
+  fd.append('phrase_id', p.id);
+  fd.append('attempt', attempt);
+
+  const diag = document.getElementById('diagnosis-section');
+  diag.classList.add('visible');
+  document.getElementById('score-num').textContent = '…';
+  document.getElementById('focus-text').textContent = 'Azure analizando fonemas...';
+  document.getElementById('encouragement-text').textContent = '';
+  document.getElementById('word-chips').innerHTML = '';
+  document.getElementById('tips-list').innerHTML = '';
+  document.getElementById('btn-retry').disabled = true;
+  document.getElementById('btn-next').disabled = true;
+
+  try {
+    const r = await fetch(`${API}/assess`, { method: 'POST', body: fd });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.detail || r.status); }
+    const data = await r.json();
+    renderDiagnosis(data);
+    sessionScores.push(data.score);
+    updateScoreLabel();
+  } catch(e) {
+    document.getElementById('focus-text').textContent = `Error: ${e.message}`;
+  }
+
+  btn.innerHTML = '● Re-grabar'; btn.disabled = false;
+  document.getElementById('btn-retry').disabled = false;
+  document.getElementById('btn-next').disabled = false;
+}
+
+// ── TTS (Web Speech API — no external calls) ──────────────────────────────
+let rpVoice = null;
+
+function loadRPVoice() {
+  const voices = speechSynthesis.getVoices();
+  // Prefer en-GB voices; pick the first available
+  rpVoice = voices.find(v => v.lang === 'en-GB' && /hazel|george|susan|ryan|sonia/i.test(v.name))
+         || voices.find(v => v.lang === 'en-GB')
+         || voices.find(v => v.lang.startsWith('en'));
+}
+
+// Voices load asynchronously on some browsers
+speechSynthesis.onvoiceschanged = loadRPVoice;
+loadRPVoice();
+
+function playTTS() {
+  const btn = document.getElementById('btn-tts');
+  speechSynthesis.cancel();
+
+  const p = phrases[currentIdx];
+  const utt = new SpeechSynthesisUtterance(p.en);
+  utt.lang = 'en-GB';
+  utt.rate = 0.82;   // slightly slower — easier to follow
+  utt.pitch = 1.0;
+  if (rpVoice) utt.voice = rpVoice;
+
+  btn.innerHTML = '♪ Reproduciendo...';
+  btn.disabled = true;
+
+  utt.onend = () => {
+    btn.innerHTML = '♪ Escuchar RP';
+    btn.disabled = false;
+  };
+  utt.onerror = () => {
+    btn.innerHTML = '♪ Escuchar RP';
+    btn.disabled = false;
+  };
+
+  speechSynthesis.speak(utt);
+}
+
+function renderDiagnosis(data) {
+  const s = data.score;
+  document.getElementById('score-num').textContent = Number(s).toFixed(1);
+  document.querySelector('.score-number').style.color =
+    s >= 8 ? 'var(--ok)' : s >= 6 ? 'var(--warn)' : 'var(--clay)';
+
+  document.getElementById('focus-text').textContent = data.focus || '—';
+  document.getElementById('encouragement-text').textContent = data.encouragement || '';
+
+  // Subscores row
+  let subEl = document.getElementById('subscores');
+  if (!subEl) {
+    subEl = document.createElement('div');
+    subEl.id = 'subscores';
+    subEl.style.cssText = 'display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap';
+    document.querySelector('.score-display').after(subEl);
+  }
+  subEl.innerHTML = ['accuracy','fluency','completeness'].map(k => `
+    <div style="font-size:12px;color:var(--ink);opacity:0.7">
+      <span style="font-weight:700;font-size:14px;color:var(--ink)">${data[k] ?? '—'}</span>
+      <span style="opacity:0.5"> / 100 ${k}</span>
+    </div>`).join('');
+
+  // Transcription Azure heard
+  let transEl = document.getElementById('azure-trans');
+  if (!transEl) {
+    transEl = document.createElement('div');
+    transEl.id = 'azure-trans';
+    transEl.style.cssText = 'font-size:11px;opacity:0.5;margin-bottom:10px;font-style:italic';
+    subEl.after(transEl);
+  }
+  transEl.textContent = data.transcription ? `Azure escuchó: "${data.transcription}"` : '';
+
+  // Word chips with real Azure score
+  const chipsEl = document.getElementById('word-chips');
+  chipsEl.innerHTML = '';
+  (data.words || []).forEach(w => {
+    const chip = document.createElement('div');
+    const icon = w.status === 'ok' ? '✅' : w.status === 'warn' ? '⚠️' : '❌';
+    chip.className = `chip ${w.status}`;
+    chip.title = `Azure accuracy: ${w.accuracy}/100${w.worst_phoneme ? ` · worst phoneme: /${w.worst_phoneme}/ (${w.worst_phoneme_score}/100)` : ''}`;
+    chip.innerHTML = `${icon} ${w.word} <span style="font-size:10px;opacity:0.6">${w.accuracy}</span>`;
+    chipsEl.appendChild(chip);
+  });
+
+  // Cerebras coaching tips
+  const tipsEl = document.getElementById('tips-list');
+  tipsEl.innerHTML = '';
+  const tips = data.tips || [];
+
+  // Also show words with worst phonemes that have no Cerebras tip
+  const problemWords = (data.words || []).filter(w => w.status !== 'ok' && w.worst_phoneme);
+  const tippedWords = new Set(tips.map(t => t.word?.toLowerCase()));
+
+  tips.forEach(t => {
+    const item = document.createElement('div');
+    item.className = 'tip-item';
+    item.innerHTML = `
+      <div class="tip-word">"${t.word}"</div>
+      <div class="tip-content">
+        ${t.tip}
+        ${t.phoneme_focus ? `<div class="phoneme-error">Focus: /${t.phoneme_focus}/</div>` : ''}
+      </div>`;
+    tipsEl.appendChild(item);
+  });
+
+  // Add raw phoneme data for words not covered by Cerebras
+  problemWords.filter(w => !tippedWords.has(w.word.toLowerCase())).forEach(w => {
+    const item = document.createElement('div');
+    item.className = 'tip-item';
+    item.innerHTML = `
+      <div class="tip-word">"${w.word}"</div>
+      <div class="tip-content">
+        Accuracy: ${w.accuracy}/100
+        <div class="phoneme-error">Worst phoneme: /${w.worst_phoneme}/ → ${w.worst_phoneme_score}/100</div>
+      </div>`;
+    tipsEl.appendChild(item);
+  });
+
+  if (!tipsEl.children.length) {
+    tipsEl.innerHTML = '<div style="color:var(--ok);font-size:13px">¡Excelente! Sin correcciones mayores.</div>';
+  }
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────
+function retryStep3() {
+  hideDiagnosis();
+  resetStep3UI();
+  document.getElementById('btn-rec3').disabled = false;
+}
+
+function nextPhrase() {
+  if (currentIdx < phrases.length - 1) {
+    loadPhrase(currentIdx + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    const avg = sessionScores.length
+      ? (sessionScores.reduce((a,b)=>a+b,0)/sessionScores.length).toFixed(1)
+      : '—';
+    document.querySelector('main').innerHTML = `
+      <div class="card">
+        <div class="card-header"><div class="step-badge">🎩</div> ¡Sesión completada!</div>
+        <div class="card-body" style="text-align:center;padding:32px">
+          <div style="font-size:48px;margin-bottom:12px">🎉</div>
+          <div style="font-size:22px;font-weight:700;margin-bottom:8px">Jolly good show!</div>
+          <div style="font-size:14px;opacity:0.6;margin-bottom:24px">
+            Completaste las 25 frases con un score promedio de <strong>${avg}/10</strong>
+          </div>
+          <button class="btn-primary" onclick="location.reload()">↺ Reiniciar sesión</button>
+        </div>
+      </div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
