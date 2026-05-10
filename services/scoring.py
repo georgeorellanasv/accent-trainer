@@ -137,10 +137,12 @@ def get_phoneme_scores(word_scores: List[dict]) -> Dict[str, float]:
     """
     phoneme_scores = {}
     phoneme_counts = {}
+    raw_phonemes_seen = set()  # Debug: track what Azure returns
 
     for word in word_scores:
         for p in word.get("phonemes", []):
             raw_phoneme = p.get("phoneme", "")
+            raw_phonemes_seen.add(raw_phoneme)
             phoneme = normalize_phoneme(raw_phoneme)  # Convert to IPA
             accuracy = p.get("accuracy", 0)
 
@@ -157,6 +159,10 @@ def get_phoneme_scores(word_scores: List[dict]) -> Dict[str, float]:
             phoneme_scores[phoneme] = round(
                 phoneme_scores[phoneme] / phoneme_counts[phoneme], 1
             )
+
+    # Debug: log raw phonemes from Azure
+    print(f"[DEBUG] Azure raw phonemes: {sorted(raw_phonemes_seen)}")
+    print(f"[DEBUG] Normalized scores: {phoneme_scores}")
 
     return phoneme_scores
 

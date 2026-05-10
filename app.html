@@ -820,9 +820,14 @@
         <div class="waveform-box user">
           <div class="waveform-label">Tu intento</div>
           <canvas class="waveform-canvas" id="waveform-user"></canvas>
-          <button class="waveform-btn" id="btn-play-user" onclick="playUserPhoneme()" disabled>
-            ▶ Escuchar
-          </button>
+          <div style="display:flex;gap:8px">
+            <button class="waveform-btn" id="btn-record-phoneme" onclick="recordPhoneme()" style="flex:1;background:var(--clay);color:white;border-color:var(--clay)">
+              🎤 Grabar
+            </button>
+            <button class="waveform-btn" id="btn-play-user" onclick="playUserPhoneme()" disabled style="flex:1">
+              ▶ Escuchar
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1452,6 +1457,56 @@ async function playUserPhoneme() {
     URL.revokeObjectURL(audioUrl);
   };
   await audio.play();
+}
+
+// Record phoneme practice in modal
+let modalRecorder = null;
+let modalAudioChunks = [];
+
+async function recordPhoneme() {
+  const btn = document.getElementById('btn-record-phoneme');
+
+  // If already recording, stop
+  if (modalRecorder && modalRecorder.state === 'recording') {
+    modalRecorder.stop();
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    modalAudioChunks = [];
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+      ? 'audio/webm;codecs=opus' : 'audio/webm';
+    modalRecorder = new MediaRecorder(stream, { mimeType });
+
+    modalRecorder.ondataavailable = e => {
+      if (e.data.size > 0) modalAudioChunks.push(e.data);
+    };
+
+    modalRecorder.onstop = async () => {
+      stream.getTracks().forEach(t => t.stop());
+      btn.textContent = '🎤 Grabar';
+      btn.style.background = 'var(--clay)';
+
+      const rawBlob = new Blob(modalAudioChunks, { type: 'audio/webm' });
+      let wavBlob;
+      try { wavBlob = await blobToWav(rawBlob); }
+      catch(e) { wavBlob = rawBlob; }
+
+      // Store for this phoneme
+      userPhonemeAudio[currentModalPhoneme] = wavBlob;
+
+      // Draw waveform and enable playback
+      await drawWaveformFromBlob(wavBlob, 'waveform-user', 'var(--clay)');
+      document.getElementById('btn-play-user').disabled = false;
+    };
+
+    modalRecorder.start(100);
+    btn.textContent = '■ Detener';
+    btn.style.background = '#922b21';
+  } catch(e) {
+    alert('No se pudo acceder al micrófono');
+  }
 }
 
 // Store audio sample for phonemes when we get assessment results
