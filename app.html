@@ -491,64 +491,22 @@
     ⚠️ No se pudo acceder al micrófono. Verifica los permisos del navegador e intenta de nuevo.
   </div>
 
-  <!-- Step 1: Spanish -->
-  <div class="card" id="card-step1">
+  <!-- RP Practice Card -->
+  <div class="card" id="card-practice">
     <div class="card-header">
-      <div class="step-badge">1</div>
-      Lee en español — warming up
-      <div class="status-dot" id="dot1"></div>
-    </div>
-    <div class="card-body">
-      <div class="phrase-text" id="phrase-es"></div>
-      <div class="notes-text">Léelo en voz alta para familiarizarte con el significado.</div>
-      <div class="controls">
-        <button class="btn-record" id="btn-rec1" onclick="startStep(1)">● Grabar</button>
-        <button class="btn-ghost" id="btn-skip1" onclick="skipStep(1)">Omitir</button>
-      </div>
-      <div class="transcription-box" id="trans1">
-        <div class="label">Whisper escuchó</div>
-        <div id="trans1-text"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 2: English -->
-  <div class="card" id="card-step2">
-    <div class="card-header">
-      <div class="step-badge">2</div>
-      Lee en inglés — warm up con las palabras
-      <div class="status-dot" id="dot2"></div>
-    </div>
-    <div class="card-body">
-      <div class="phrase-text" id="phrase-en"></div>
-      <div class="notes-text">Léelo sin preocuparte aún por el acento. Solo familiarízate con las palabras.</div>
-      <div class="controls">
-        <button class="btn-record" id="btn-rec2" onclick="startStep(2)" disabled>● Grabar</button>
-        <button class="btn-ghost" id="btn-skip2" onclick="skipStep(2)" disabled>Omitir</button>
-      </div>
-      <div class="transcription-box" id="trans2">
-        <div class="label">Whisper escuchó</div>
-        <div id="trans2-text"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 3: Posh attempt -->
-  <div class="card" id="card-step3">
-    <div class="card-header">
-      <div class="step-badge">3</div>
-      Intenta Posh English — RP accent
+      <div class="step-badge">🎯</div>
+      Practica el acento RP
       <div id="diff-badge" class="diff-badge diff-easy" style="margin-left:auto"></div>
     </div>
     <div class="card-body">
-      <div class="phrase-text" id="phrase-en2"></div>
+      <div class="phrase-text" id="phrase-en"></div>
       <div class="ipa-text" id="phrase-ipa"></div>
       <div class="notes-text" id="phrase-notes"></div>
-      <div class="controls">
-        <button class="btn-secondary" id="btn-tts" onclick="playTTS()" disabled>
+      <div class="controls" style="margin-top:16px">
+        <button class="btn-secondary" id="btn-tts" onclick="playTTS()">
           ♪ Escuchar RP
         </button>
-        <button class="btn-record" id="btn-rec3" onclick="startStep(3)" disabled>● Grabar intento</button>
+        <button class="btn-record" id="btn-rec" onclick="startRecording()">● Grabar intento</button>
         <span id="attempt-label"></span>
       </div>
     </div>
@@ -577,7 +535,7 @@
       <div class="tips-list" id="tips-list"></div>
 
       <div class="nav-row">
-        <button class="btn-ghost" id="btn-retry" onclick="retryStep3()">↺ Reintentar</button>
+        <button class="btn-ghost" id="btn-retry" onclick="retry()">↺ Reintentar</button>
         <button class="btn-primary" id="btn-next" onclick="nextPhrase()">Siguiente frase →</button>
       </div>
     </div>
@@ -650,7 +608,6 @@ let phrases = [];
 let currentIdx = 0;
 let attempt = 0;
 let sessionScores = [];
-let stepsDone = [false, false];
 
 // Sidebar tracking
 let currentStreak = 0;
@@ -674,7 +631,6 @@ async function init() {
 function loadPhrase(idx) {
   currentIdx = idx;
   attempt = 0;
-  stepsDone = [false, false];
 
   const p = phrases[idx];
 
@@ -684,28 +640,20 @@ function loadPhrase(idx) {
   document.getElementById('progress-label').textContent = `Frase ${idx + 1} de ${phrases.length}`;
   updateScoreLabel();
 
-  // Phrases
-  document.getElementById('phrase-es').textContent = '❝ ' + p.es + ' ❞';
+  // Phrase content
   document.getElementById('phrase-en').textContent = '❝ ' + p.en + ' ❞';
-  document.getElementById('phrase-en2').textContent = '❝ ' + p.en + ' ❞';
   document.getElementById('phrase-ipa').textContent = p.ipa_rp;
   document.getElementById('phrase-notes').textContent = p.notes;
 
   const diff = p.difficulty;
   const badge = document.getElementById('diff-badge');
-  badge.textContent = diff;
+  badge.textContent = diff.toUpperCase();
   badge.className = `diff-badge diff-${diff}`;
 
   // Reset UI
-  resetStepUI(1);
-  resetStepUI(2);
-  resetStep3UI();
   hideDiagnosis();
-
-  document.getElementById('btn-rec2').disabled = true;
-  document.getElementById('btn-skip2').disabled = true;
-  document.getElementById('btn-rec3').disabled = true;
-  document.getElementById('btn-tts').disabled = true;
+  document.getElementById('btn-rec').disabled = false;
+  document.getElementById('btn-rec').innerHTML = '● Grabar intento';
   document.getElementById('attempt-label').textContent = '';
 }
 
@@ -718,44 +666,8 @@ function updateScoreLabel() {
   }
 }
 
-function resetStepUI(step) {
-  const trans = document.getElementById(`trans${step}`);
-  trans.classList.remove('visible');
-  document.getElementById(`trans${step}-text`).textContent = '';
-  const dot = document.getElementById(`dot${step}`);
-  dot.className = 'status-dot';
-  const btn = document.getElementById(`btn-rec${step}`);
-  btn.classList.remove('recording');
-  btn.innerHTML = '● Grabar';
-  btn.disabled = (step === 2);
-}
-
-function resetStep3UI() {
-  document.getElementById('btn-rec3').classList.remove('recording');
-  document.getElementById('btn-rec3').innerHTML = '● Grabar intento';
-}
-
 function hideDiagnosis() {
   document.getElementById('diagnosis-section').classList.remove('visible');
-}
-
-// ── Step progression ──────────────────────────────────────────────────────
-function skipStep(step) {
-  markStepDone(step);
-}
-
-function markStepDone(step) {
-  stepsDone[step - 1] = true;
-  const dot = document.getElementById(`dot${step}`);
-  dot.className = 'status-dot done';
-
-  if (step === 1) {
-    document.getElementById('btn-rec2').disabled = false;
-    document.getElementById('btn-skip2').disabled = false;
-  } else if (step === 2) {
-    document.getElementById('btn-rec3').disabled = false;
-    document.getElementById('btn-tts').disabled = false;
-  }
 }
 
 // ── WAV encoder ───────────────────────────────────────────────────────────
@@ -765,7 +677,6 @@ async function blobToWav(blob) {
   const decoded = await audioCtx.decodeAudioData(arrayBuffer);
   await audioCtx.close();
 
-  // Resample to 16kHz mono (Azure speech requirement)
   const targetRate = 16000;
   const offCtx = new OfflineAudioContext(1, Math.ceil(decoded.duration * targetRate), targetRate);
   const src = offCtx.createBufferSource();
@@ -792,70 +703,28 @@ async function blobToWav(blob) {
   return new Blob([wavBuf], { type: 'audio/wav' });
 }
 
-// ── Recording (steps 1 & 2 use Web Speech for warm-up, step 3 uses real audio) ──
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let activeRecognition = null;
+// ── Recording ─────────────────────────────────────────────────────────────
 let mediaRecorder = null;
 let audioChunks = [];
 let micStream = null;
 
-function startStep(step) {
-  if (step < 3) {
-    startWarmup(step);
-  } else {
-    startRealRecording();
-  }
-}
+async function startRecording() {
+  const btn = document.getElementById('btn-rec');
 
-// Steps 1 & 2: Web Speech API (warm-up only, no analysis needed)
-function startWarmup(step) {
-  const btn = document.getElementById(`btn-rec${step}`);
-  if (activeRecognition) {
-    activeRecognition.stop(); activeRecognition = null;
-    btn.classList.remove('recording');
-    btn.innerHTML = '● Grabar';
+  // If already recording, stop and send
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
     return;
   }
-  if (!SpeechRecognition) { skipStep(step); return; }
-  document.getElementById('mic-error').style.display = 'none';
-  const rec = new SpeechRecognition();
-  rec.lang = step === 1 ? 'es-MX' : 'en-GB';
-  rec.interimResults = false; rec.maxAlternatives = 1;
-  activeRecognition = rec;
-  btn.classList.add('recording'); btn.innerHTML = '■ Detener';
-  document.getElementById(`dot${step}`).className = 'status-dot active';
-  rec.onresult = (e) => {
-    activeRecognition = null;
-    btn.classList.remove('recording');
-    const text = e.results[0][0].transcript;
-    document.getElementById(`trans${step}-text`).textContent = text;
-    document.getElementById(`trans${step}`).classList.add('visible');
-    btn.innerHTML = '● Re-grabar'; btn.disabled = false;
-    markStepDone(step);
-  };
-  rec.onerror = () => {
-    activeRecognition = null; btn.classList.remove('recording');
-    btn.innerHTML = '● Grabar'; btn.disabled = false;
-  };
-  rec.onend = () => {
-    if (activeRecognition === rec) activeRecognition = null;
-    if (btn.innerHTML === '■ Detener') btn.innerHTML = '● Grabar';
-  };
-  rec.start();
-}
 
-// Step 3: MediaRecorder → WAV → Azure real assessment
-async function startRealRecording() {
-  const btn = document.getElementById('btn-rec3');
-  if (mediaRecorder && mediaRecorder.state === 'recording') {
-    mediaRecorder.stop(); return;
-  }
   document.getElementById('mic-error').style.display = 'none';
   try {
     micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
   } catch(e) {
-    document.getElementById('mic-error').style.display = 'block'; return;
+    document.getElementById('mic-error').style.display = 'block';
+    return;
   }
+
   audioChunks = [];
   const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
     ? 'audio/webm;codecs=opus' : 'audio/webm';
@@ -863,14 +732,16 @@ async function startRealRecording() {
   mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
   mediaRecorder.onstop = handleAssessment;
   mediaRecorder.start(100);
-  btn.classList.add('recording'); btn.innerHTML = '■ Detener (enviar)';
+
+  btn.classList.add('recording');
+  btn.innerHTML = '■ Detener';
 }
 
 async function handleAssessment() {
   micStream.getTracks().forEach(t => t.stop());
-  const btn = document.getElementById('btn-rec3');
+  const btn = document.getElementById('btn-rec');
   btn.classList.remove('recording');
-  btn.innerHTML = '<span class="spinner"></span> Analizando con Azure...';
+  btn.innerHTML = '<span class="spinner"></span> Analizando...';
   btn.disabled = true;
 
   const rawBlob = new Blob(audioChunks, { type: 'audio/webm' });
@@ -1092,10 +963,12 @@ function updateSidebar(data) {
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────
-function retryStep3() {
+function retry() {
   hideDiagnosis();
-  resetStep3UI();
-  document.getElementById('btn-rec3').disabled = false;
+  const btn = document.getElementById('btn-rec');
+  btn.classList.remove('recording');
+  btn.innerHTML = '● Grabar intento';
+  btn.disabled = false;
 }
 
 function nextPhrase() {
