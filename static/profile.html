@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Setup - Accent Trainer</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    .setup-container {
+      max-width: 500px;
+      margin: 60px auto;
+      padding: 20px;
+    }
+    .setup-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .setup-subtitle {
+      color: #666;
+      margin-bottom: 32px;
+    }
+    .option-group {
+      margin-bottom: 32px;
+    }
+    .option-label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .voice-options {
+      display: flex;
+      gap: 16px;
+    }
+    .voice-option {
+      flex: 1;
+      padding: 20px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .voice-option:hover {
+      border-color: var(--clay);
+    }
+    .voice-option.selected {
+      border-color: var(--clay);
+      background: rgba(204, 120, 92, 0.1);
+    }
+    .voice-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    .voice-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .voice-desc {
+      font-size: 12px;
+      color: #666;
+    }
+    .mode-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mode-option {
+      padding: 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .mode-option:hover {
+      border-color: var(--clay);
+    }
+    .mode-option.selected {
+      border-color: var(--clay);
+      background: rgba(204, 120, 92, 0.1);
+    }
+    .mode-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .mode-desc {
+      font-size: 13px;
+      color: #666;
+    }
+    .start-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="setup-container">
+    <h1 class="setup-title">Welcome to Accent Trainer</h1>
+    <p class="setup-subtitle">Let's set up your profile to get started with RP British pronunciation.</p>
+
+    <div class="option-group">
+      <label class="option-label">Choose your reference voice</label>
+      <div class="voice-options">
+        <div class="voice-option selected" data-voice="female" onclick="selectVoice('female')">
+          <div class="voice-icon">👩</div>
+          <div class="voice-name">Sonia</div>
+          <div class="voice-desc">Female RP voice</div>
+        </div>
+        <div class="voice-option" data-voice="male" onclick="selectVoice('male')">
+          <div class="voice-icon">👨</div>
+          <div class="voice-name">Ryan</div>
+          <div class="voice-desc">Male RP voice</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="option-group">
+      <label class="option-label">How would you like to start?</label>
+      <div class="mode-options">
+        <div class="mode-option selected" data-mode="full" onclick="selectMode('full')">
+          <div class="mode-title">Full Diagnostic (Recommended)</div>
+          <div class="mode-desc">Take a 90-second diagnostic to identify your specific pronunciation challenges. Get a personalized learning path.</div>
+        </div>
+        <div class="mode-option" data-mode="gradual" onclick="selectMode('gradual')">
+          <div class="mode-title">Start Practicing</div>
+          <div class="mode-desc">Jump right in. The system will learn your profile as you practice.</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary start-btn" onclick="startTraining()">
+      Continue
+    </button>
+  </div>
+
+  <script>
+    let selectedVoice = 'female';
+    let selectedMode = 'full';
+
+    function selectVoice(voice) {
+      selectedVoice = voice;
+      document.querySelectorAll('.voice-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.voice === voice);
+      });
+    }
+
+    function selectMode(mode) {
+      selectedMode = mode;
+      document.querySelectorAll('.mode-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.mode === mode);
+      });
+    }
+
+    async function startTraining() {
+      // Create user profile
+      const response = await fetch('/api/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          voice_preference: selectedVoice,
+          onboarding_mode: selectedMode
+        })
+      });
+
+      const user = await response.json();
+
+      // Store user ID
+      localStorage.setItem('userId', user.id);
+      localStorage.setItem('voicePreference', selectedVoice);
+
+      // Navigate based on mode
+      if (selectedMode === 'full') {
+        window.location.href = '/diagnostic';
+      } else {
+        window.location.href = '/';
+      }
+    }
+
+    // Check if user already exists
+    const existingUserId = localStorage.getItem('userId');
+    if (existingUserId) {
+      // Could add option to continue or start fresh
+    }
+  </script>
+</body>
+</html>
