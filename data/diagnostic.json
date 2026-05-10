@@ -1,0 +1,16 @@
+{
+  "minimal_pairs": [
+    {"id": 1001, "word1": "think", "word2": "sink", "target": "θ"},
+    {"id": 1002, "word1": "ship", "word2": "sheep", "target": "ɪ/iː"},
+    {"id": 1003, "word1": "cat", "word2": "cut", "target": "æ/ʌ"},
+    {"id": 1004, "word1": "path", "word2": "pat", "target": "ɑː"},
+    {"id": 1005, "word1": "three", "word2": "tree", "target": "θ"},
+    {"id": 1006, "word1": "this", "word2": "dis", "target": "ð"}
+  ],
+  "non_rhotic_words": ["water", "rather", "father", "better"],
+  "diagnostic_paragraph": {
+    "text": "I think the weather in the north of England is rather different from what we're used to. The path through the park looks absolutely marvellous in spring. Would you be so kind as to pass the water? I suppose we shall have to leave rather early this afternoon.",
+    "target_phonemes": ["θ", "ð", "ɑː", "ɔː", "ɪ", "iː", "æ", "ʌ", "əʊ", "ə"],
+    "ipa": "/aɪ θɪŋk ðə ˈweðə ɪn ðə nɔːθ əv ˈɪŋɡlənd ɪz ˈrɑːðə ˈdɪfrənt frəm wɒt wɪə ˈjuːst tuː. ðə pɑːθ θruː ðə pɑːk lʊks ˈæbsəluːtli ˈmɑːvələs ɪn sprɪŋ. wʊd juː biː səʊ kaɪnd æz tə pɑːs ðə ˈwɔːtə? aɪ səˈpəʊz wiː ʃæl hæv tə liːv ˈrɑːðə ˈɜːli ðɪs ˌɑːftəˈnuːn./"
+  }
+}
