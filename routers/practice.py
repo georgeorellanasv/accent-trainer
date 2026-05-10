@@ -154,7 +154,7 @@ def get_level_phrases(level_id: int, user_id: str, limit: int = 5):
 async def assess_pronunciation(
     audio: UploadFile = File(...),
     phrase_id: int = Form(...),
-    user_id: str = Form(...),
+    user_id: str = Form("anonymous"),
     attempt: int = Form(1),
 ):
     """
