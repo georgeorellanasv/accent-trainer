@@ -64,14 +64,126 @@
   #progress-label { font-size: 12px; color: var(--ink); opacity: 0.7; white-space: nowrap; }
   #score-label { font-size: 12px; color: var(--clay-d); font-weight: 600; white-space: nowrap; }
 
-  /* ── Main container ── */
-  main {
-    max-width: 720px;
+  /* ── Main layout with sidebar ── */
+  .app-container {
+    display: flex;
+    max-width: 1100px;
     margin: 28px auto;
     padding: 0 20px;
+    gap: 24px;
+  }
+  main {
+    flex: 1;
+    max-width: 720px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .sidebar-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .sidebar-header {
+    background: var(--sand);
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.8;
+  }
+  .sidebar-body {
+    padding: 14px;
+  }
+
+  /* Phoneme heatmap */
+  .phoneme-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .phoneme-cell {
+    padding: 10px 6px;
+    border-radius: 6px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .phoneme-cell.good { background: rgba(74,124,89,0.2); color: var(--ok); }
+  .phoneme-cell.warn { background: rgba(184,134,11,0.2); color: var(--warn); }
+  .phoneme-cell.bad { background: rgba(204,120,92,0.25); color: var(--clay-d); }
+  .phoneme-cell.unknown { background: var(--sand); color: var(--ink); opacity: 0.5; }
+  .phoneme-score { font-size: 10px; opacity: 0.7; display: block; margin-top: 2px; }
+
+  /* Streak */
+  .streak-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .streak-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--clay);
+  }
+  .streak-label {
+    font-size: 12px;
+    color: var(--ink);
+    opacity: 0.7;
+  }
+  .streak-fire { font-size: 24px; }
+
+  /* Level progress */
+  .level-info {
+    margin-bottom: 12px;
+  }
+  .level-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .level-phonemes {
+    font-size: 12px;
+    color: var(--ink);
+    opacity: 0.6;
+  }
+  .level-bar-outer {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .level-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--clay), var(--ok));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+  .level-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-top: 8px;
+    color: var(--ink);
+    opacity: 0.6;
+  }
+
+  @media (max-width: 900px) {
+    .app-container { flex-direction: column; }
+    .sidebar { width: 100%; order: -1; }
   }
 
   /* ── Cards ── */
@@ -371,6 +483,8 @@
   <div id="score-label">—</div>
 </div>
 
+<div class="app-container">
+
 <main>
 
   <div id="mic-error">
@@ -471,6 +585,63 @@
 
 </main>
 
+<!-- Sidebar -->
+<aside class="sidebar">
+
+  <!-- Streak -->
+  <div class="sidebar-card">
+    <div class="sidebar-header">🔥 Racha actual</div>
+    <div class="sidebar-body">
+      <div class="streak-display">
+        <div class="streak-fire">🔥</div>
+        <div class="streak-number" id="streak-count">0</div>
+        <div>
+          <div class="streak-label">frases con</div>
+          <div class="streak-label" style="font-weight:600">score ≥ 7</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Level Progress -->
+  <div class="sidebar-card">
+    <div class="sidebar-header">📊 Nivel 1</div>
+    <div class="sidebar-body">
+      <div class="level-info">
+        <div class="level-name">Sonidos que no existen</div>
+        <div class="level-phonemes">/θ/ (think) · /ð/ (the)</div>
+      </div>
+      <div class="level-bar-outer">
+        <div class="level-bar-inner" id="level-progress-bar" style="width: 0%"></div>
+      </div>
+      <div class="level-stats">
+        <span id="level-phrases-done">0 frases</span>
+        <span id="level-avg-score">Promedio: —</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phoneme Heatmap -->
+  <div class="sidebar-card">
+    <div class="sidebar-header">🎯 Tus fonemas</div>
+    <div class="sidebar-body">
+      <div class="phoneme-grid" id="phoneme-heatmap">
+        <div class="phoneme-cell unknown">/θ/<span class="phoneme-score">—</span></div>
+        <div class="phoneme-cell unknown">/ð/<span class="phoneme-score">—</span></div>
+        <div class="phoneme-cell unknown">/ɪ/<span class="phoneme-score">—</span></div>
+        <div class="phoneme-cell unknown">/iː/<span class="phoneme-score">—</span></div>
+        <div class="phoneme-cell unknown">/æ/<span class="phoneme-score">—</span></div>
+        <div class="phoneme-cell unknown">/ʌ/<span class="phoneme-score">—</span></div>
+        <div class="phoneme-cell unknown">/ɑː/<span class="phoneme-score">—</span></div>
+        <div class="phoneme-cell unknown">/ə/<span class="phoneme-score">—</span></div>
+        <div class="phoneme-cell unknown">/əʊ/<span class="phoneme-score">—</span></div>
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+</div><!-- end app-container -->
 
 <script>
 const API = '/api';
@@ -480,6 +651,12 @@ let currentIdx = 0;
 let attempt = 0;
 let sessionScores = [];
 let stepsDone = [false, false];
+
+// Sidebar tracking
+let currentStreak = 0;
+let phrasesDone = 0;
+let phonemeScores = {}; // Running average of phoneme scores
+let phonemeCounts = {}; // Count for averaging
 
 
 // ── Init ──────────────────────────────────────────────────────────────────
@@ -863,6 +1040,55 @@ function renderDiagnosis(data) {
   if (!tipsEl.children.length) {
     tipsEl.innerHTML = '<div style="color:var(--ok);font-size:13px">¡Excelente! Sin correcciones mayores.</div>';
   }
+
+  // Update sidebar
+  updateSidebar(data);
+}
+
+function updateSidebar(data) {
+  const score = data.score || 0;
+
+  // Update streak
+  if (score >= 7) {
+    currentStreak++;
+  } else {
+    currentStreak = 0;
+  }
+  document.getElementById('streak-count').textContent = currentStreak;
+  document.querySelector('.streak-fire').textContent = currentStreak >= 5 ? '🔥' : currentStreak >= 3 ? '✨' : '💪';
+
+  // Update phrases done
+  phrasesDone++;
+  document.getElementById('level-phrases-done').textContent = `${phrasesDone} frases`;
+
+  // Update level progress bar (need 10 phrases with avg ≥7 to complete level)
+  const avgScore = sessionScores.length ? sessionScores.reduce((a,b)=>a+b,0)/sessionScores.length : 0;
+  const progress = Math.min(100, (phrasesDone / 10) * 100);
+  document.getElementById('level-progress-bar').style.width = `${progress}%`;
+  document.getElementById('level-avg-score').textContent = `Promedio: ${avgScore.toFixed(1)}`;
+
+  // Update phoneme heatmap from phoneme_scores in response
+  if (data.phoneme_scores) {
+    for (const [phoneme, score] of Object.entries(data.phoneme_scores)) {
+      if (!phonemeCounts[phoneme]) {
+        phonemeCounts[phoneme] = 0;
+        phonemeScores[phoneme] = 0;
+      }
+      // Running average
+      phonemeScores[phoneme] = (phonemeScores[phoneme] * phonemeCounts[phoneme] + score) / (phonemeCounts[phoneme] + 1);
+      phonemeCounts[phoneme]++;
+    }
+  }
+
+  // Render phoneme heatmap
+  const heatmap = document.getElementById('phoneme-heatmap');
+  const targetPhonemes = ['θ', 'ð', 'ɪ', 'iː', 'æ', 'ʌ', 'ɑː', 'ə', 'əʊ'];
+  heatmap.innerHTML = targetPhonemes.map(p => {
+    const score = phonemeScores[p];
+    const hasScore = score !== undefined;
+    const cls = !hasScore ? 'unknown' : score >= 85 ? 'good' : score >= 70 ? 'warn' : 'bad';
+    return `<div class="phoneme-cell ${cls}">/${p}/<span class="phoneme-score">${hasScore ? Math.round(score) : '—'}</span></div>`;
+  }).join('');
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────
