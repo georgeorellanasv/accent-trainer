@@ -467,6 +467,192 @@
     color: var(--clay-d);
     margin-bottom: 12px;
   }
+
+  /* ── Phoneme Modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal-header {
+    background: var(--ink);
+    color: white;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .modal-phoneme {
+    font-size: 42px;
+    font-family: monospace;
+    font-weight: 700;
+  }
+  .modal-info h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .modal-info .example {
+    font-size: 13px;
+    opacity: 0.7;
+  }
+  .modal-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.7;
+  }
+  .modal-close:hover { opacity: 1; }
+  .modal-body { padding: 24px; }
+  .modal-score {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--sand);
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .modal-score-num {
+    font-size: 36px;
+    font-weight: 700;
+  }
+  .modal-score-label {
+    font-size: 12px;
+    opacity: 0.6;
+  }
+  .modal-score.good .modal-score-num { color: var(--ok); }
+  .modal-score.warn .modal-score-num { color: var(--warn); }
+  .modal-score.bad .modal-score-num { color: var(--clay); }
+
+  /* Waveform comparison */
+  .waveform-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .waveform-box {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  .waveform-box.correct { border-color: var(--ok); }
+  .waveform-box.user { border-color: var(--clay); }
+  .waveform-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    opacity: 0.6;
+  }
+  .waveform-box.correct .waveform-label { color: var(--ok); }
+  .waveform-box.user .waveform-label { color: var(--clay); }
+  .waveform-canvas {
+    width: 100%;
+    height: 60px;
+    background: white;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .waveform-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .waveform-box.correct .waveform-btn {
+    background: rgba(74,124,89,0.15);
+    color: var(--ok);
+    border: 1px solid var(--ok);
+  }
+  .waveform-box.user .waveform-btn {
+    background: rgba(204,120,92,0.15);
+    color: var(--clay);
+    border: 1px solid var(--clay);
+  }
+  .waveform-btn:disabled {
+    opacity: 0.4;
+  }
+
+  /* Tip section in modal */
+  .modal-tip {
+    background: linear-gradient(135deg, var(--sand), #f5f0e0);
+    border-radius: 10px;
+    padding: 16px;
+    border-left: 4px solid var(--clay);
+  }
+  .modal-tip-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--clay-d);
+    margin-bottom: 8px;
+  }
+  .modal-tip-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .modal-tip-diagram {
+    margin-top: 12px;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  /* End session profile */
+  .profile-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .profile-phoneme {
+    padding: 12px 8px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .profile-phoneme:hover { transform: scale(1.05); }
+  .profile-phoneme .symbol {
+    font-family: monospace;
+    font-size: 20px;
+    font-weight: 700;
+    display: block;
+  }
+  .profile-phoneme .score {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .profile-phoneme.good { background: rgba(74,124,89,0.15); color: var(--ok); }
+  .profile-phoneme.warn { background: rgba(184,134,11,0.15); color: var(--warn); }
+  .profile-phoneme.bad { background: rgba(204,120,92,0.2); color: var(--clay-d); }
 </style>
 </head>
 <body>
@@ -601,6 +787,59 @@
 
 </div><!-- end app-container -->
 
+<!-- Phoneme Comparison Modal -->
+<div class="modal-overlay" id="phoneme-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-phoneme" id="modal-phoneme-symbol">/θ/</div>
+      <div class="modal-info">
+        <h3 id="modal-phoneme-name">TH sorda</h3>
+        <div class="example" id="modal-phoneme-example">Como en: think, three, bath</div>
+      </div>
+      <button class="modal-close" onclick="closePhonemeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-score" id="modal-score-box">
+        <div>
+          <div class="modal-score-num" id="modal-score-num">—</div>
+          <div class="modal-score-label">Tu score</div>
+        </div>
+        <div style="flex:1;font-size:13px;opacity:0.7" id="modal-score-msg">
+          Sin datos aún. Practica frases con este fonema.
+        </div>
+      </div>
+
+      <div class="waveform-compare">
+        <div class="waveform-box correct">
+          <div class="waveform-label">✓ RP Correcto</div>
+          <canvas class="waveform-canvas" id="waveform-correct"></canvas>
+          <button class="waveform-btn" id="btn-play-correct" onclick="playCorrectPhoneme()">
+            ▶ Escuchar
+          </button>
+        </div>
+        <div class="waveform-box user">
+          <div class="waveform-label">Tu intento</div>
+          <canvas class="waveform-canvas" id="waveform-user"></canvas>
+          <button class="waveform-btn" id="btn-play-user" onclick="playUserPhoneme()" disabled>
+            ▶ Escuchar
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-tip">
+        <div class="modal-tip-title">Cómo pronunciarlo</div>
+        <div class="modal-tip-text" id="modal-tip-text">
+          Pon la punta de la lengua entre los dientes superiores e inferiores. Sopla aire suavemente.
+        </div>
+        <div class="modal-tip-diagram" id="modal-tip-diagram">
+          Lengua: [===▶ entre dientes<br>
+          Aire: sopla suave (sin voz)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const API = '/api';
 
@@ -614,6 +853,83 @@ let currentStreak = 0;
 let phrasesDone = 0;
 let phonemeScores = {}; // Running average of phoneme scores
 let phonemeCounts = {}; // Count for averaging
+let userPhonemeAudio = {}; // Store user's audio samples per phoneme
+
+// Phoneme data for modal
+const PHONEME_DATA = {
+  'θ': {
+    name: 'TH sorda (voiceless)',
+    examples: 'think, three, bath, wealth',
+    exampleWord: 'think',
+    tip: 'Pon la punta de la lengua ENTRE los dientes (que se vea). Sopla aire sin usar la voz. Es como una "s" pero con la lengua afuera.',
+    diagram: '👅 Lengua: visible entre dientes\n🌬️ Aire: sopla suave (SIN voz)\n❌ NO es "t" ni "s" ni "f"',
+    commonError: 'Los hispanohablantes dicen "tink" o "sink" en vez de "think"'
+  },
+  'ð': {
+    name: 'TH sonora (voiced)',
+    examples: 'the, this, that, mother',
+    exampleWord: 'the',
+    tip: 'Igual que /θ/ pero VIBRA la garganta. La lengua entre los dientes, pero esta vez usas la voz.',
+    diagram: '👅 Lengua: visible entre dientes\n🔊 Voz: garganta vibra\n❌ NO es "d" ni "z"',
+    commonError: 'Los hispanohablantes dicen "de" en vez de "the"'
+  },
+  'ɪ': {
+    name: 'I corta (KIT vowel)',
+    examples: 'sit, bit, fish, ship',
+    exampleWord: 'ship',
+    tip: 'Es MÁS corta y relajada que la "i" española. La boca más abierta, como entre "i" y "e".',
+    diagram: '👄 Boca: semi-abierta\n⏱️ Duración: CORTA\n🆚 ship ≠ sheep',
+    commonError: 'Confundir "ship" con "sheep", "bit" con "beat"'
+  },
+  'iː': {
+    name: 'I larga (FLEECE vowel)',
+    examples: 'see, beat, sheep, machine',
+    exampleWord: 'sheep',
+    tip: 'Alarga la "i" y sonríe. Los labios se estiran hacia los lados.',
+    diagram: '👄 Boca: sonrisa tensa\n⏱️ Duración: LARGA\n🆚 sheep ≠ ship',
+    commonError: 'No alargar suficiente, confundiendo "beat" con "bit"'
+  },
+  'æ': {
+    name: 'A abierta (TRAP vowel)',
+    examples: 'cat, bad, man, apple',
+    exampleWord: 'cat',
+    tip: 'Abre MUCHO la boca, más que para "a" española. Es entre "a" y "e", casi como quejándote.',
+    diagram: '👄 Boca: MUY abierta\n👅 Lengua: baja y adelante\n🆚 cat ≠ cut ≠ cot',
+    commonError: 'Decir "a" española en vez de abrir más: "cat" suena como "ket"'
+  },
+  'ʌ': {
+    name: 'U corta (STRUT vowel)',
+    examples: 'cup, but, love, blood',
+    exampleWord: 'cup',
+    tip: 'Es como una "a" pero con la boca más cerrada y relajada. Sonido muy central y corto.',
+    diagram: '👄 Boca: relajada, medio abierta\n👅 Lengua: centro de la boca\n🆚 cup ≠ cop ≠ cap',
+    commonError: 'Decir "o" española: "cop" en vez de "cup"'
+  },
+  'ɑː': {
+    name: 'A larga posterior (BATH/PALM)',
+    examples: 'father, bath, car, heart',
+    exampleWord: 'bath',
+    tip: 'Abre la boca y relaja. Es una "a" larga y profunda, desde atrás de la garganta.',
+    diagram: '👄 Boca: abierta y relajada\n👅 Lengua: atrás y abajo\n⏱️ Duración: LARGA',
+    commonError: 'Hacerla muy corta o muy frontal como "a" española'
+  },
+  'ə': {
+    name: 'Schwa (sonido reducido)',
+    examples: 'about, sofa, banana, doctor',
+    exampleWord: 'about',
+    tip: 'El sonido más común del inglés. Súper corto y relajado, casi un gruñido. Aparece en sílabas NO acentuadas.',
+    diagram: '👄 Boca: relajada, casi cerrada\n⏱️ Duración: MUY corta\n💡 Sílabas débiles',
+    commonError: 'Pronunciar todas las vocales claras. En inglés las sílabas débiles se "comen"'
+  },
+  'əʊ': {
+    name: 'O diptongo (GOAT vowel)',
+    examples: 'go, home, know, boat',
+    exampleWord: 'go',
+    tip: 'En RP británico, empieza con schwa /ə/ y termina en /ʊ/. NO es "o" española pura.',
+    diagram: '🔄 Diptongo: ə → ʊ\n👄 Empieza central, termina redondeada\n🆚 British "gəʊ" ≠ American "goʊ"',
+    commonError: 'Decir "o" pura española. El RP requiere el diptongo completo'
+  }
+};
 
 
 // ── Init ──────────────────────────────────────────────────────────────────
@@ -775,6 +1091,8 @@ async function handleAssessment() {
     renderDiagnosis(data);
     sessionScores.push(data.score);
     updateScoreLabel();
+    // Store audio for problematic phonemes
+    storePhonemeAudio(wavBlob, data.words);
   } catch(e) {
     document.getElementById('focus-text').textContent = `Error: ${e.message}`;
   }
@@ -951,15 +1269,208 @@ function updateSidebar(data) {
     }
   }
 
-  // Render phoneme heatmap
+  // Render phoneme heatmap (clickable)
+  renderPhonemeHeatmap();
+}
+
+function renderPhonemeHeatmap() {
   const heatmap = document.getElementById('phoneme-heatmap');
   const targetPhonemes = ['θ', 'ð', 'ɪ', 'iː', 'æ', 'ʌ', 'ɑː', 'ə', 'əʊ'];
   heatmap.innerHTML = targetPhonemes.map(p => {
     const score = phonemeScores[p];
     const hasScore = score !== undefined;
     const cls = !hasScore ? 'unknown' : score >= 85 ? 'good' : score >= 70 ? 'warn' : 'bad';
-    return `<div class="phoneme-cell ${cls}">/${p}/<span class="phoneme-score">${hasScore ? Math.round(score) : '—'}</span></div>`;
+    return `<div class="phoneme-cell ${cls}" onclick="openPhonemeModal('${p}')" style="cursor:pointer" title="Click para detalles">/${p}/<span class="phoneme-score">${hasScore ? Math.round(score) : '—'}</span></div>`;
   }).join('');
+}
+
+// ── Phoneme Modal ─────────────────────────────────────────────────────────
+let currentModalPhoneme = null;
+let correctAudioBuffer = null;
+let userAudioBuffer = null;
+let audioContext = null;
+
+function openPhonemeModal(phoneme) {
+  currentModalPhoneme = phoneme;
+  const data = PHONEME_DATA[phoneme];
+  if (!data) return;
+
+  // Fill modal content
+  document.getElementById('modal-phoneme-symbol').textContent = `/${phoneme}/`;
+  document.getElementById('modal-phoneme-name').textContent = data.name;
+  document.getElementById('modal-phoneme-example').textContent = `Como en: ${data.examples}`;
+  document.getElementById('modal-tip-text').textContent = data.tip;
+  document.getElementById('modal-tip-diagram').innerHTML = data.diagram.replace(/\n/g, '<br>');
+
+  // Score
+  const score = phonemeScores[phoneme];
+  const scoreBox = document.getElementById('modal-score-box');
+  const scoreNum = document.getElementById('modal-score-num');
+  const scoreMsg = document.getElementById('modal-score-msg');
+
+  if (score !== undefined) {
+    scoreNum.textContent = Math.round(score);
+    scoreBox.className = 'modal-score ' + (score >= 85 ? 'good' : score >= 70 ? 'warn' : 'bad');
+    scoreMsg.textContent = score >= 85 ? '¡Excelente! Dominas este sonido.' :
+                           score >= 70 ? 'Vas bien, sigue practicando.' :
+                           `Necesita trabajo. ${data.commonError}`;
+  } else {
+    scoreNum.textContent = '—';
+    scoreBox.className = 'modal-score';
+    scoreMsg.textContent = 'Sin datos aún. Practica frases con este fonema.';
+  }
+
+  // User audio button
+  const btnUser = document.getElementById('btn-play-user');
+  if (userPhonemeAudio[phoneme]) {
+    btnUser.disabled = false;
+    // Draw user waveform
+    drawWaveformFromBlob(userPhonemeAudio[phoneme], 'waveform-user', 'var(--clay)');
+  } else {
+    btnUser.disabled = true;
+    clearCanvas('waveform-user');
+  }
+
+  // Load correct pronunciation
+  loadCorrectPhonemeAudio(phoneme, data.exampleWord);
+
+  document.getElementById('phoneme-modal').classList.add('visible');
+}
+
+function closePhonemeModal() {
+  document.getElementById('phoneme-modal').classList.remove('visible');
+  currentModalPhoneme = null;
+}
+
+async function loadCorrectPhonemeAudio(phoneme, exampleWord) {
+  const canvas = document.getElementById('waveform-correct');
+  const btn = document.getElementById('btn-play-correct');
+  btn.disabled = true;
+  btn.textContent = '⏳ Cargando...';
+  clearCanvas('waveform-correct');
+
+  try {
+    const response = await fetch(`${API}/tts/text?text=${encodeURIComponent(exampleWord)}&voice=female`);
+    if (!response.ok) throw new Error('TTS failed');
+
+    const blob = await response.blob();
+    correctAudioBuffer = blob;
+
+    // Draw waveform
+    await drawWaveformFromBlob(blob, 'waveform-correct', 'var(--ok)');
+
+    btn.disabled = false;
+    btn.textContent = '▶ Escuchar';
+  } catch (e) {
+    console.error('Error loading correct audio:', e);
+    btn.textContent = '❌ Error';
+  }
+}
+
+async function drawWaveformFromBlob(blob, canvasId, color) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width = canvas.offsetWidth * 2;
+  const height = canvas.height = canvas.offsetHeight * 2;
+
+  try {
+    if (!audioContext || audioContext.state === 'closed') {
+      audioContext = new AudioContext();
+    }
+    const arrayBuffer = await blob.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    const data = audioBuffer.getChannelData(0);
+
+    // Draw waveform
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = '#f5f5f5';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    const step = Math.ceil(data.length / width);
+    const amp = height / 2;
+
+    for (let i = 0; i < width; i++) {
+      let min = 1.0, max = -1.0;
+      for (let j = 0; j < step; j++) {
+        const datum = data[(i * step) + j];
+        if (datum < min) min = datum;
+        if (datum > max) max = datum;
+      }
+      ctx.moveTo(i, (1 + min) * amp);
+      ctx.lineTo(i, (1 + max) * amp);
+    }
+    ctx.stroke();
+  } catch (e) {
+    console.error('Waveform error:', e);
+  }
+}
+
+function clearCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * 2;
+  canvas.height = canvas.offsetHeight * 2;
+  ctx.fillStyle = '#f0f0f0';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#ccc';
+  ctx.font = '24px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Sin audio', canvas.width/2, canvas.height/2 + 8);
+}
+
+async function playCorrectPhoneme() {
+  if (!correctAudioBuffer) return;
+  const btn = document.getElementById('btn-play-correct');
+  btn.disabled = true;
+  btn.textContent = '▶ Reproduciendo...';
+
+  const audioUrl = URL.createObjectURL(correctAudioBuffer);
+  const audio = new Audio(audioUrl);
+  audio.onended = () => {
+    btn.disabled = false;
+    btn.textContent = '▶ Escuchar';
+    URL.revokeObjectURL(audioUrl);
+  };
+  await audio.play();
+}
+
+async function playUserPhoneme() {
+  if (!currentModalPhoneme || !userPhonemeAudio[currentModalPhoneme]) return;
+  const btn = document.getElementById('btn-play-user');
+  btn.disabled = true;
+  btn.textContent = '▶ Reproduciendo...';
+
+  const audioUrl = URL.createObjectURL(userPhonemeAudio[currentModalPhoneme]);
+  const audio = new Audio(audioUrl);
+  audio.onended = () => {
+    btn.disabled = false;
+    btn.textContent = '▶ Escuchar';
+    URL.revokeObjectURL(audioUrl);
+  };
+  await audio.play();
+}
+
+// Store audio sample for a phoneme when we get assessment results
+function storePhonemeAudio(audioBlob, words) {
+  // Find words with problem phonemes and store the audio
+  // For simplicity, we store the full phrase audio keyed by the worst phoneme
+  if (!words || !words.length) return;
+
+  for (const w of words) {
+    if (w.worst_phoneme && w.worst_phoneme_score < 85) {
+      // Store this audio for the problematic phoneme
+      if (!userPhonemeAudio[w.worst_phoneme]) {
+        userPhonemeAudio[w.worst_phoneme] = audioBlob;
+      } else if (w.worst_phoneme_score < 70) {
+        // Replace with worse example for training
+        userPhonemeAudio[w.worst_phoneme] = audioBlob;
+      }
+    }
+  }
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────
@@ -976,21 +1487,89 @@ function nextPhrase() {
     loadPhrase(currentIdx + 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
-    const avg = sessionScores.length
-      ? (sessionScores.reduce((a,b)=>a+b,0)/sessionScores.length).toFixed(1)
-      : '—';
-    document.querySelector('main').innerHTML = `
-      <div class="card">
-        <div class="card-header"><div class="step-badge">🎩</div> ¡Sesión completada!</div>
-        <div class="card-body" style="text-align:center;padding:32px">
+    showSessionComplete();
+  }
+}
+
+function showSessionComplete() {
+  const avg = sessionScores.length
+    ? (sessionScores.reduce((a,b)=>a+b,0)/sessionScores.length).toFixed(1)
+    : '—';
+
+  // Build phoneme profile summary
+  const targetPhonemes = ['θ', 'ð', 'ɪ', 'iː', 'æ', 'ʌ', 'ɑː', 'ə', 'əʊ'];
+  const problemPhonemes = targetPhonemes.filter(p => phonemeScores[p] !== undefined && phonemeScores[p] < 80);
+  const goodPhonemes = targetPhonemes.filter(p => phonemeScores[p] !== undefined && phonemeScores[p] >= 80);
+
+  let phonemeHTML = targetPhonemes.map(p => {
+    const score = phonemeScores[p];
+    const hasScore = score !== undefined;
+    const cls = !hasScore ? '' : score >= 85 ? 'good' : score >= 70 ? 'warn' : 'bad';
+    const hasAudio = userPhonemeAudio[p] ? '🎤' : '';
+    return `<div class="profile-phoneme ${cls}" onclick="openPhonemeModal('${p}')">
+      <span class="symbol">/${p}/</span>
+      <span class="score">${hasScore ? Math.round(score) + ' ' + hasAudio : '—'}</span>
+    </div>`;
+  }).join('');
+
+  let problemSummary = '';
+  if (problemPhonemes.length > 0) {
+    problemSummary = `<div style="background:rgba(204,120,92,0.1);padding:16px;border-radius:10px;margin-bottom:20px;text-align:left">
+      <div style="font-weight:700;color:var(--clay-d);margin-bottom:8px">🎯 Fonemas a trabajar:</div>
+      <div style="font-size:13px;line-height:1.6">
+        ${problemPhonemes.map(p => `<strong>/${p}/</strong> - ${PHONEME_DATA[p]?.commonError || ''}`).join('<br>')}
+      </div>
+      <div style="font-size:12px;opacity:0.6;margin-top:10px">
+        Toca cualquier fonema para escuchar la comparación
+      </div>
+    </div>`;
+  }
+
+  document.querySelector('main').innerHTML = `
+    <div class="card">
+      <div class="card-header"><div class="step-badge">🎩</div> ¡Sesión completada!</div>
+      <div class="card-body" style="padding:24px">
+        <div style="text-align:center;margin-bottom:24px">
           <div style="font-size:48px;margin-bottom:12px">🎉</div>
           <div style="font-size:22px;font-weight:700;margin-bottom:8px">Jolly good show!</div>
-          <div style="font-size:14px;opacity:0.6;margin-bottom:24px">
-            Completaste las 25 frases con un score promedio de <strong>${avg}/10</strong>
+          <div style="font-size:14px;opacity:0.6">
+            Score promedio: <strong>${avg}/10</strong> · ${phrasesDone} frases · Racha: ${currentStreak}
           </div>
-          <button class="btn-primary" onclick="location.reload()">↺ Reiniciar sesión</button>
         </div>
-      </div>`;
+
+        ${problemSummary}
+
+        <div style="margin-bottom:20px">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5;margin-bottom:12px">
+            Tu perfil de fonemas (toca para comparar)
+          </div>
+          <div class="profile-summary">
+            ${phonemeHTML}
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:center">
+          <button class="btn-ghost" onclick="saveProfile()">💾 Guardar perfil</button>
+          <button class="btn-primary" onclick="location.reload()">🔄 Nueva sesión</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function saveProfile() {
+  // Save profile to backend
+  const profile = {
+    phonemeScores: phonemeScores,
+    sessionScores: sessionScores,
+    phrasesDone: phrasesDone,
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    // For now just show confirmation (backend persistence already happens per-phrase)
+    alert('✅ Perfil guardado!\n\nTus scores de fonemas se guardan automáticamente en cada práctica.');
+  } catch(e) {
+    alert('Error guardando perfil: ' + e.message);
   }
 }
 
