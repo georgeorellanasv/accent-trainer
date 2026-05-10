@@ -54,6 +54,90 @@ def normalize_phoneme(phoneme: str) -> str:
     """Convert Azure phoneme to standard IPA."""
     return AZURE_TO_IPA.get(phoneme, phoneme)
 
+# Word to phoneme mapping for common RP practice words
+WORD_PHONEMES = {
+    # θ words (voiceless th)
+    "think": ["θ"], "thought": ["θ"], "through": ["θ"], "three": ["θ"],
+    "thing": ["θ"], "third": ["θ"], "think": ["θ"], "thanks": ["θ"],
+    "thursday": ["θ"], "therapy": ["θ"], "thick": ["θ"], "thin": ["θ"],
+    "thaw": ["θ"], "throw": ["θ"], "threat": ["θ"], "throne": ["θ"],
+    "bath": ["θ", "ɑː"], "path": ["θ", "ɑː"], "cloth": ["θ"],
+    "wealth": ["θ"], "health": ["θ"], "teeth": ["θ", "iː"],
+    "month": ["θ"], "earth": ["θ", "ɜː"], "worth": ["θ", "ɜː"],
+
+    # ð words (voiced th)
+    "the": ["ð"], "this": ["ð"], "that": ["ð"], "these": ["ð"],
+    "those": ["ð"], "there": ["ð"], "their": ["ð"], "they": ["ð"],
+    "them": ["ð"], "then": ["ð"], "than": ["ð"], "thus": ["ð"],
+    "though": ["ð"], "although": ["ð"], "mother": ["ð"], "father": ["ð"],
+    "brother": ["ð"], "other": ["ð"], "another": ["ð"], "together": ["ð"],
+    "weather": ["ð"], "whether": ["ð"], "feather": ["ð"], "leather": ["ð"],
+    "rather": ["ð", "ɑː"], "bother": ["ð"], "gather": ["ð"],
+    "with": ["ð"], "within": ["ð"], "without": ["ð"],
+    "breathe": ["ð", "iː"], "bathe": ["ð"], "soothe": ["ð"],
+
+    # ɪ words (short i)
+    "sit": ["ɪ"], "bit": ["ɪ"], "ship": ["ɪ"], "fish": ["ɪ"],
+    "is": ["ɪ"], "it": ["ɪ"], "in": ["ɪ"], "if": ["ɪ"],
+    "this": ["ɪ", "ð"], "with": ["ɪ", "ð"], "which": ["ɪ"],
+    "will": ["ɪ"], "still": ["ɪ"], "fill": ["ɪ"], "bill": ["ɪ"],
+    "big": ["ɪ"], "pig": ["ɪ"], "dig": ["ɪ"], "fig": ["ɪ"],
+    "quick": ["ɪ"], "thick": ["ɪ", "θ"], "sick": ["ɪ"], "pick": ["ɪ"],
+    "little": ["ɪ"], "middle": ["ɪ"], "riddle": ["ɪ"],
+    "dreadful": ["ɪ"], "beautiful": ["ɪ"], "wonderful": ["ɪ"],
+
+    # iː words (long ee)
+    "see": ["iː"], "bee": ["iː"], "free": ["iː"], "tree": ["iː"],
+    "beat": ["iː"], "seat": ["iː"], "meat": ["iː"], "heat": ["iː"],
+    "sheep": ["iː"], "deep": ["iː"], "keep": ["iː"], "sleep": ["iː"],
+    "read": ["iː"], "lead": ["iː"], "need": ["iː"], "feed": ["iː"],
+    "these": ["iː", "ð"], "please": ["iː"], "cheese": ["iː"],
+
+    # æ words (cat vowel)
+    "cat": ["æ"], "bat": ["æ"], "hat": ["æ"], "fat": ["æ"],
+    "bad": ["æ"], "sad": ["æ"], "mad": ["æ"], "dad": ["æ"],
+    "man": ["æ"], "can": ["æ"], "pan": ["æ"], "ran": ["æ"],
+    "that": ["æ", "ð"], "have": ["æ"], "has": ["æ"], "had": ["æ"],
+    "apple": ["æ"], "happy": ["æ"], "matter": ["æ"],
+
+    # ʌ words (cup vowel)
+    "cup": ["ʌ"], "but": ["ʌ"], "cut": ["ʌ"], "shut": ["ʌ"],
+    "love": ["ʌ"], "above": ["ʌ"], "come": ["ʌ"], "some": ["ʌ"],
+    "done": ["ʌ"], "none": ["ʌ"], "one": ["ʌ"], "won": ["ʌ"],
+    "money": ["ʌ"], "honey": ["ʌ"], "funny": ["ʌ"], "sunny": ["ʌ"],
+    "mother": ["ʌ", "ð"], "brother": ["ʌ", "ð"], "other": ["ʌ", "ð"],
+    "another": ["ʌ", "ð"], "country": ["ʌ"], "young": ["ʌ"],
+
+    # ɑː words (bath/palm vowel)
+    "bath": ["ɑː", "θ"], "path": ["ɑː", "θ"], "grass": ["ɑː"],
+    "class": ["ɑː"], "glass": ["ɑː"], "pass": ["ɑː"], "last": ["ɑː"],
+    "fast": ["ɑː"], "past": ["ɑː"], "cast": ["ɑː"], "ask": ["ɑː"],
+    "task": ["ɑː"], "mask": ["ɑː"], "basket": ["ɑː"],
+    "father": ["ɑː", "ð"], "rather": ["ɑː", "ð"], "after": ["ɑː"],
+    "car": ["ɑː"], "far": ["ɑː"], "star": ["ɑː"], "bar": ["ɑː"],
+    "heart": ["ɑː"], "part": ["ɑː"], "start": ["ɑː"], "art": ["ɑː"],
+
+    # ə words (schwa)
+    "about": ["ə"], "again": ["ə"], "away": ["ə"], "ago": ["ə"],
+    "today": ["ə"], "tomorrow": ["ə"], "together": ["ə", "ð"],
+    "doctor": ["ə"], "teacher": ["ə"], "worker": ["ə"],
+    "weather": ["ə", "ð"], "father": ["ə", "ð"], "mother": ["ə", "ð"],
+    "water": ["ə"], "after": ["ə"], "under": ["ə"], "over": ["ə"],
+    "i": ["aɪ"],  # pronoun
+
+    # əʊ words (goat vowel)
+    "go": ["əʊ"], "no": ["əʊ"], "so": ["əʊ"], "know": ["əʊ"],
+    "show": ["əʊ"], "grow": ["əʊ"], "slow": ["əʊ"], "flow": ["əʊ"],
+    "home": ["əʊ"], "phone": ["əʊ"], "stone": ["əʊ"], "bone": ["əʊ"],
+    "boat": ["əʊ"], "coat": ["əʊ"], "goat": ["əʊ"], "float": ["əʊ"],
+    "road": ["əʊ"], "load": ["əʊ"], "code": ["əʊ"], "mode": ["əʊ"],
+    "those": ["əʊ", "ð"], "although": ["əʊ", "ð"],
+}
+
+def get_phonemes_for_word(word: str) -> List[str]:
+    """Get the target phonemes for a word."""
+    return WORD_PHONEMES.get(word.lower(), [])
+
 def calculate_strict_score(word_scores: List[dict]) -> float:
     """
     VERY STRICT scoring for RP accent training.
@@ -133,24 +217,25 @@ def calculate_strict_score(word_scores: List[dict]) -> float:
 def get_phoneme_scores(word_scores: List[dict]) -> Dict[str, float]:
     """
     Extract individual phoneme scores from word scores.
-    Returns dict mapping IPA phoneme -> score (normalized from Azure format)
+    Uses word-to-phoneme mapping since Azure doesn't return phoneme names.
+    Returns dict mapping IPA phoneme -> score
     """
     phoneme_scores = {}
     phoneme_counts = {}
-    raw_phonemes_seen = set()  # Debug: track what Azure returns
 
-    for word in word_scores:
-        for p in word.get("phonemes", []):
-            raw_phoneme = p.get("phoneme", "")
-            raw_phonemes_seen.add(raw_phoneme)
-            phoneme = normalize_phoneme(raw_phoneme)  # Convert to IPA
-            accuracy = p.get("accuracy", 0)
+    for word_data in word_scores:
+        word = word_data.get("word", "").lower()
+        word_accuracy = word_data.get("accuracy", 0)
 
+        # Get phonemes for this word from our mapping
+        word_phonemes = get_phonemes_for_word(word)
+
+        for phoneme in word_phonemes:
             if phoneme not in phoneme_scores:
                 phoneme_scores[phoneme] = 0
                 phoneme_counts[phoneme] = 0
 
-            phoneme_scores[phoneme] += accuracy
+            phoneme_scores[phoneme] += word_accuracy
             phoneme_counts[phoneme] += 1
 
     # Average scores
@@ -159,10 +244,6 @@ def get_phoneme_scores(word_scores: List[dict]) -> Dict[str, float]:
             phoneme_scores[phoneme] = round(
                 phoneme_scores[phoneme] / phoneme_counts[phoneme], 1
             )
-
-    # Debug: log raw phonemes from Azure
-    print(f"[DEBUG] Azure raw phonemes: {sorted(raw_phonemes_seen)}")
-    print(f"[DEBUG] Normalized scores: {phoneme_scores}")
 
     return phoneme_scores
 
