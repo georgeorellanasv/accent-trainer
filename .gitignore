@@ -2,3 +2,6 @@
 .tts_cache/
 __pycache__/
 *.pyc
+*.db
+data/*.db
+data/tts_cache/
