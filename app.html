@@ -737,44 +737,48 @@ async function handleAssessment() {
 }
 
 // ── TTS (Web Speech API — no external calls) ──────────────────────────────
-let rpVoice = null;
+// Azure TTS - natural RP voice (Sonia female, Ryan male)
+let currentAudio = null;
 
-function loadRPVoice() {
-  const voices = speechSynthesis.getVoices();
-  // Prefer en-GB voices; pick the first available
-  rpVoice = voices.find(v => v.lang === 'en-GB' && /hazel|george|susan|ryan|sonia/i.test(v.name))
-         || voices.find(v => v.lang === 'en-GB')
-         || voices.find(v => v.lang.startsWith('en'));
-}
-
-// Voices load asynchronously on some browsers
-speechSynthesis.onvoiceschanged = loadRPVoice;
-loadRPVoice();
-
-function playTTS() {
+async function playTTS() {
   const btn = document.getElementById('btn-tts');
-  speechSynthesis.cancel();
+
+  // Stop any playing audio
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
 
   const p = phrases[currentIdx];
-  const utt = new SpeechSynthesisUtterance(p.en);
-  utt.lang = 'en-GB';
-  utt.rate = 0.82;   // slightly slower — easier to follow
-  utt.pitch = 1.0;
-  if (rpVoice) utt.voice = rpVoice;
-
-  btn.innerHTML = '♪ Reproduciendo...';
+  btn.innerHTML = '♪ Cargando...';
   btn.disabled = true;
 
-  utt.onend = () => {
-    btn.innerHTML = '♪ Escuchar RP';
-    btn.disabled = false;
-  };
-  utt.onerror = () => {
-    btn.innerHTML = '♪ Escuchar RP';
-    btn.disabled = false;
-  };
+  try {
+    // Use Azure TTS endpoint - defaults to female (Sonia)
+    const response = await fetch(`${API}/tts/text?text=${encodeURIComponent(p.en)}&voice=female`);
+    if (!response.ok) throw new Error('TTS failed');
 
-  speechSynthesis.speak(utt);
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    currentAudio = new Audio(audioUrl);
+    currentAudio.onended = () => {
+      btn.innerHTML = '♪ Escuchar RP';
+      btn.disabled = false;
+      URL.revokeObjectURL(audioUrl);
+    };
+    currentAudio.onerror = () => {
+      btn.innerHTML = '♪ Escuchar RP';
+      btn.disabled = false;
+    };
+
+    btn.innerHTML = '♪ Reproduciendo...';
+    await currentAudio.play();
+  } catch (e) {
+    console.error('TTS error:', e);
+    btn.innerHTML = '♪ Escuchar RP';
+    btn.disabled = false;
+  }
 }
 
 function renderDiagnosis(data) {
