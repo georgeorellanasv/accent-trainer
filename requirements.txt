@@ -5,3 +5,7 @@ openai
 requests
 python-multipart
 python-dotenv
+aiosqlite
+pytest
+pytest-asyncio
+httpx
