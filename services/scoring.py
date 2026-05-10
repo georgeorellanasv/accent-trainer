@@ -1,10 +1,58 @@
 from typing import Dict, List
 
+# Azure Speech SDK phoneme to IPA mapping for en-GB
+# Azure uses SAPI-like phonemes, we convert to IPA for display
+AZURE_TO_IPA = {
+    # Consonants - TH sounds (critical for Spanish speakers)
+    "θ": "θ",  # voiceless th (think)
+    "ð": "ð",  # voiced th (the)
+    "th": "θ",  # alternate representation
+    "dh": "ð",  # alternate representation
+
+    # Vowels
+    "ɪ": "ɪ",  # KIT
+    "iː": "iː", # FLEECE
+    "i": "iː",  # sometimes Azure omits length mark
+    "iy": "iː", # SAPI style
+    "ih": "ɪ",  # SAPI style
+    "æ": "æ",  # TRAP
+    "ae": "æ",  # alternate
+    "ʌ": "ʌ",  # STRUT
+    "ah": "ʌ",  # SAPI style
+    "ɑː": "ɑː", # BATH/PALM
+    "ɑ": "ɑː",  # without length
+    "aa": "ɑː", # SAPI style
+    "ə": "ə",  # schwa
+    "ax": "ə",  # SAPI style
+    "əʊ": "əʊ", # GOAT
+    "oʊ": "əʊ", # American-style
+    "ow": "əʊ", # SAPI style
+    "eɪ": "eɪ", # FACE
+    "ey": "eɪ", # SAPI style
+    "aɪ": "aɪ", # PRICE
+    "ay": "aɪ", # SAPI style
+    "ɔː": "ɔː", # THOUGHT
+    "ɔ": "ɔː",  # without length
+    "ao": "ɔː", # SAPI style
+    "ʊ": "ʊ",  # FOOT
+    "uh": "ʊ",  # SAPI style
+    "uː": "uː", # GOOSE
+    "uw": "uː", # SAPI style
+    "ɜː": "ɜː", # NURSE
+    "er": "ɜː", # SAPI style
+    "e": "e",   # DRESS
+    "eh": "e",  # SAPI style
+}
+
 # Key RP phonemes that get extra weight in scoring
 RP_KEY_PHONEMES = {"θ", "ð", "ɑː", "ɔː", "əʊ", "ɪ", "æ", "ʌ", "ə"}
 
 # Phonemes that Spanish speakers struggle with most - CRITICAL for RP
 PROBLEM_PHONEMES = {"θ", "ð"}
+
+def normalize_phoneme(phoneme: str) -> str:
+    """Convert Azure phoneme to standard IPA."""
+    return AZURE_TO_IPA.get(phoneme, phoneme)
 
 def calculate_strict_score(word_scores: List[dict]) -> float:
     """
@@ -29,7 +77,8 @@ def calculate_strict_score(word_scores: List[dict]) -> float:
         weight = 1.0
 
         for p in phonemes:
-            phoneme = p.get("phoneme", "")
+            raw_phoneme = p.get("phoneme", "")
+            phoneme = normalize_phoneme(raw_phoneme)  # Convert to IPA
             p_acc = p.get("accuracy", 0)
 
             if phoneme in PROBLEM_PHONEMES:
@@ -84,14 +133,15 @@ def calculate_strict_score(word_scores: List[dict]) -> float:
 def get_phoneme_scores(word_scores: List[dict]) -> Dict[str, float]:
     """
     Extract individual phoneme scores from word scores.
-    Returns dict mapping phoneme -> score
+    Returns dict mapping IPA phoneme -> score (normalized from Azure format)
     """
     phoneme_scores = {}
     phoneme_counts = {}
 
     for word in word_scores:
         for p in word.get("phonemes", []):
-            phoneme = p.get("phoneme", "")
+            raw_phoneme = p.get("phoneme", "")
+            phoneme = normalize_phoneme(raw_phoneme)  # Convert to IPA
             accuracy = p.get("accuracy", 0)
 
             if phoneme not in phoneme_scores:

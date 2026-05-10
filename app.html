@@ -1091,8 +1091,8 @@ async function handleAssessment() {
     renderDiagnosis(data);
     sessionScores.push(data.score);
     updateScoreLabel();
-    // Store audio for problematic phonemes
-    storePhonemeAudio(wavBlob, data.words);
+    // Store audio for all practiced phonemes
+    storePhonemeAudio(wavBlob, data.words, data.phoneme_scores);
   } catch(e) {
     document.getElementById('focus-text').textContent = `Error: ${e.message}`;
   }
@@ -1454,21 +1454,22 @@ async function playUserPhoneme() {
   await audio.play();
 }
 
-// Store audio sample for a phoneme when we get assessment results
-function storePhonemeAudio(audioBlob, words) {
-  // Find words with problem phonemes and store the audio
-  // For simplicity, we store the full phrase audio keyed by the worst phoneme
+// Store audio sample for phonemes when we get assessment results
+function storePhonemeAudio(audioBlob, words, phonemeScoresFromApi) {
   if (!words || !words.length) return;
 
+  // Store audio for each phoneme we practiced (from API phoneme_scores)
+  if (phonemeScoresFromApi) {
+    for (const phoneme of Object.keys(phonemeScoresFromApi)) {
+      // Always store the most recent audio for comparison
+      userPhonemeAudio[phoneme] = audioBlob;
+    }
+  }
+
+  // Also store based on worst_phoneme in words (as backup)
   for (const w of words) {
-    if (w.worst_phoneme && w.worst_phoneme_score < 85) {
-      // Store this audio for the problematic phoneme
-      if (!userPhonemeAudio[w.worst_phoneme]) {
-        userPhonemeAudio[w.worst_phoneme] = audioBlob;
-      } else if (w.worst_phoneme_score < 70) {
-        // Replace with worse example for training
-        userPhonemeAudio[w.worst_phoneme] = audioBlob;
-      }
+    if (w.worst_phoneme) {
+      userPhonemeAudio[w.worst_phoneme] = audioBlob;
     }
   }
 }
